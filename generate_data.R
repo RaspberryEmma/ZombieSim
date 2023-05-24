@@ -25,21 +25,18 @@ suppressPackageStartupMessages({
 
 # ----- Synthetic Data Generation -----
 
-# example dummy data for structure
-x.1 <- rnorm(100)
-x.2 <- runif(100)
-y   <- rweibull(100, shape = 1, scale = pi)
+# example for structure
+generate.start.cond <- function(size = NULL) {
+  cond <- c(1.0, 2.0, 3.0)
+  return (cond)
+}
 
-data.example <- data.frame(x.1, x.2, y)
+ex.1 <- generate.start.cond()
 
 # save data
-save( data.example, file = "data/example.rda" )
+save( ex.1 , file = "data/example.rda" )
 
-# example dummy plot
-png("plots/example.png")
-p <- ggplot(data = data.example, mapping = aes(x = x.1, y = y))
-p
-dev.off()
+
 
 
 
