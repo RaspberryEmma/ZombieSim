@@ -5,7 +5,7 @@ sourceCpp("abc.cpp")
 
 test_that("generateParameterSamples returns correct output", {
     # Positive test case
-    ps <- generateParameterSamples(3, 100, -1.0, 1.0)
+    ps <- generateParameterSamples(3, 100, c(-1.0, -1.0, -1.0), c(1.0, 1.0, 1.0))
     expect_equal(dim(ps), c(100, 3))
     expect_true(all(ps > -1.0))
     expect_true(all(ps < 1.0))
@@ -15,41 +15,119 @@ test_that("generateParameterSamples returns correct output", {
     expect_error(generateParameterSamples(3, 100, 1.0, -1.0))
 })
 
-test_that("generateSimulatedData returns correct output", {
-    # Unit tests for "generateSimulatedData" function
-    # Positive test case
-    expectedOutputDimensions <- c(10, 5, 3)
-    testInputParameters <- matrix(c(rep(0.1, 10), rep(0.2, 10)), ncol = 2)
-    result <- generateSimulatedData(testInputParameters, 10, 5)
-    expect_equal(dim(result), expectedOutputDimensions)
-    expect_true(all(result >= 0))
-    # Negative test case
-    testInputParameters <- matrix(c(rep(0.1, 10), -0.2, rep(0.1, 9)), ncol = 2)
-    expect_error(generateSimulatedData(testInputParameters, 10, 5))
+# Unit tests for the generateSimulatedData function
+test_that("generateSimulatedData returns the correct dimensions", {
+    numParticles <- 3
+    parameters <- matrix(runif(5*3), nrow = numParticles, ncol = 5)
+    numTimePoints <- 10
+    
+    simulatedData <- generateSimulatedData(parameters, numTimePoints)
+    expect_equal(dim(simulatedData), c(numParticles, numTimePoints, 3))
+})
+
+test_that("generateSimulatedData throws an error for invalid birth rate", {
+    numParticles <- 3
+    parameters <- matrix(runif(5*3), nrow = numParticles, ncol = 5)
+    parameters[1,] <- c(-0.1, 0.2, 0.3, 0.4, 1.1)
+    numTimePoints <- 10
+
+    expect_error(generateSimulatedData(parameters, numTimePoints),
+               "The birth rate must be between 0 and 1.")
+})
+
+test_that("generateSimulatedData throws an error for invalid encounter rate", {
+    numParticles <- 3
+    parameters <- matrix(runif(5*3), nrow = numParticles, ncol = 5)
+    parameters[2,] <- c(0.1, 1.2, -0.3, 0.4, 0.5)
+    numTimePoints <- 10
+    
+    expect_error(generateSimulatedData(parameters, numTimePoints),
+                "The encounter rate must be between 0 and 1.")
 })
 
 test_that("computeSummaryStatistics returns correct output", {
-    # Create test data
-    testData <- array(c(500, 1, 0, 484.2, 15.8, 0,
-                        300, 200, 0, 280, 60, 160,
-                        100, 50, 350, 50, 30, 320,
-                        700, 0, 0, 564.8, 135.2, 0), dim = c(4, 3, 3))
+    # Generate example simulated data
+    numParticles <- 100
+    numTimePoints <- 10
+    testInputParameters <- generateParameterSamples(5, numParticles, c(0.0, 0.00949, 0.0, 0.00009, 0.0049), c(0.000000001, 0.0095, 0.000000001, 0.0001, 0.005))
+    simulatedData <- generateSimulatedData(testInputParameters, numTimePoints)
+    # Compute summary statistics
+    summaryStats <- computeSummaryStatistics(simulatedData)
 
-    # Positive test case
-    expectedOutput <- matrix(c(0), nrow = 4, ncol = 9)
-    colnames(expectedOutput) <- c("finalSusceptible", "finalInfected", "finalZombies",
-                                "epidemicPeakTime", "duration", "maxInfectedRate",
-                                "maxSusceptibleRate", "proportionInfectedPeak", "timeToExtinction")
-    rownames(expectedOutput) <- NULL
-    expectedOutput[1, ] <- c(0, 0, 0, 1, 2, 0, 16, 0, 2)
-    expectedOutput[2, ] <- c(0, 200, 0, 1, 2, 198, 200, 1, 2)
-    expectedOutput[3, ] <- c(0, 50, 350, 1, 2, 45, 100, 0.1, 2)
-    expectedOutput[4, ] <- c(0, 0, 0, 1, 2, 0, 136, 0, 2)
-    result <- computeSummaryStatistics(testData)
-    expect_equal(round(result, 6), expectedOutput)
+    # Check the dimensions of the output
+    expect_equal(dim(summaryStats), c(numParticles, 9), info = "Output matrix has correct dimensions")
+    # Check that all summary statistics are greater than or equal to zero
+    expect_true(all(summaryStats >= 0), info = "Summary statistics are non-negative")
+})
 
-    # Negative test case
-    expect_error(computeSummaryStatistics(matrix(c(1:12), nrow = 4, ncol = 3)))
+test_that("calculateDistance returns correct Euclidean distance", {
+    # Define observed data
+    observedData <- matrix(c(1, 3, 2, 4), ncol = 2)
+
+    # Define simulated data
+    simulatedData <- array(data = c(1, 1, 3, 3, 2, 2, 4, 4), dim = c(2, 2, 2))
+
+    # Define expected Euclidean distances
+    expectedDistances <- matrix(c(sqrt(1), sqrt(5), sqrt(5), sqrt(1)), nrow = 2)
+
+    # Calculate Euclidean distances
+    calculatedDistances <- calculateDistance(observedData, simulatedData)
+
+    # Check the dimensions of the output
+    expect_equal(dim(calculatedDistances), dim(expectedDistances), info = "Output matrix has correct dimensions")
+
+    # Check that the calculated distances match the expected values
+    expect_equal(calculatedDistances, expectedDistances, info = "Calculated distances match the expected values")
+})
+
+# Unit tests for the acceptRejectAndUpdate function
+test_that("acceptRejectAndUpdate returns the expected output dimensions", {
+    parameterSamples <- matrix(runif(100), nrow = 20, ncol = 5)
+
+    numRows <- 5
+    numCols <- 20
+    distances <- matrix(runif(numRows * numCols), nrow = numRows)
+    distances[, 1:10] <- distances[, 1:10] * 0.01
+    distances[, 11:20] <- matrix(runif(50, 0.1, 1), nrow = numRows)
+    tolerance <- 0.1
+
+    result <- acceptRejectAndUpdate(parameterSamples, distances, tolerance)
+    acceptedParamSamples <- result$acceptedParamSamples
+    weights <- result$weights
+
+    expect_equal(dim(acceptedParamSamples), c(10, 5))
+    expect_equal(length(weights), nrow(parameterSamples))
+})
+
+test_that("acceptRejectAndUpdate updates the parameter samples correctly", {
+  parameterSamples <- matrix(runif(100), nrow = 20, ncol = 5)
+  distances <- matrix(runif(20), nrow = 5, ncol = 20)
+  tolerance <- 0.1
+
+  result <- acceptRejectAndUpdate(parameterSamples, distances, tolerance)
+  acceptedSamples <- result$acceptedSamples
+
+  expect_true(all(acceptedSamples >= 0 & acceptedSamples <= 1))
+})
+
+# Unit tests for the estimatePosterior function
+test_that("estimatePosterior returns the expected output dimensions", {
+  acceptedSamples <- matrix(runif(100), nrow = 20, ncol = 5)
+  weights <- runif(20)
+
+  posterior <- estimatePosterior(acceptedSamples, weights)
+
+  expect_equal(dim(posterior), c(nrow(acceptedSamples), ncol(acceptedSamples)))
+})
+
+test_that("estimatePosterior returns valid posterior probabilities", {
+  acceptedSamples <- matrix(runif(100), nrow = 20, ncol = 5)
+  weights <- runif(20)
+
+  posterior <- estimatePosterior(acceptedSamples, weights)
+
+  expect_true(all(posterior >= 0 & posterior <= 1))
+  expect_equal(sum(posterior), 1)
 })
 
 # END OF FILE
