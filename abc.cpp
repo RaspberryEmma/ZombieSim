@@ -42,6 +42,7 @@ arma::mat generateParameterSamples(int numParams, int numParticles, arma::vec pr
   // Return the parameter samples
   return parameterSamples;
 }
+// TODO: adjust prior distribution, although above does seem to roughly work (but change in 3 populations is aggressive)
 
 // Function to generate simulated data from the zombie outbreak model
 // Parameters:
@@ -93,16 +94,7 @@ arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints)
       int newS = S + birthRate * S - encounterRate * S * Z - deathRate * S;   // Update susceptible individuals
       int newZ = Z + encounterRate * S * Z + R * resurrectionRate - defeatRate * S * Z;   // Update zombies
       int newR = R + deathRate * S + defeatRate * S * Z - resurrectionRate * R;   // Update removed individuals
-      // Set to zero if the population size for any group is negative
-      if (newS < 0) {
-        newS = 0;
-      }
-      if (newZ < 0) {
-        newZ = 0;
-      }
-      if (newR < 0) {
-        newR = 0;
-      }
+
       // Store the population sizes in the simulated data cube
       simulatedData(i, t, 0) = newS;
       simulatedData(i, t, 1) = newZ;
@@ -117,6 +109,7 @@ arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints)
 
   return simulatedData;
 }
+// TODO: sometimes simulation goes negative
 
 // Function to compute summary statistics for simulated data from the zombie outbreak model
 // Parameters:
@@ -160,6 +153,7 @@ arma::mat computeSummaryStatistics(const arma::cube& simulatedData) {
 
   return summaryStats;
 }
+// TODO: these summaries I want?
 
 // Function to calculate the euclidean distance between observed and simulated data
 // Parameters:
@@ -193,6 +187,7 @@ arma::mat calculateDistance(const arma::mat& observedData, const arma::cube& sim
   // Return the distances
   return distances;
 }
+// TODO: Euclidian distance correct?
 
 
 // Perform acceptance/rejection of parameter samples and update with weights
@@ -236,6 +231,7 @@ Rcpp::List acceptRejectAndUpdate(const arma::mat& parameterSamples, const arma::
   return Rcpp::List::create(Rcpp::Named("acceptedParamSamples") = acceptedParamSamples,
                             Rcpp::Named("weights") = weights);
 }
+// TODO: weights correct here?
 
 
 // Estimate the posterior distribution based on accepted parameter samples and weights
@@ -270,6 +266,54 @@ arma::mat estimatePosterior(const arma::mat& acceptedSamples, const arma::vec& w
   return posteriorSamples;
 }
 
+// Perform posterior inference and compute posterior summaries
+// Parameters:
+// - posteriorSamples: Matrix of posterior parameter samples (each row represents a set of posterior parameter values)
+// Returns:
+// - posteriorMean: Vector of posterior means for each parameter
+// - posteriorMedian: Vector of posterior medians for each parameter
+// - posteriorQuantiles: Matrix of posterior quantiles for each parameter (columns represent quantiles)
+// - posteriorCI: Matrix of posterior confidence intervals for each parameter (columns represent lower and upper bounds)
+// [[Rcpp::export]]
+Rcpp::List performInference(const arma::mat& posteriorSamples) {
+  // Get the number of posterior samples and parameters
+  int numSamples = posteriorSamples.n_rows;
+  int numParameters = posteriorSamples.n_cols;
+
+  // Compute posterior summaries
+  arma::vec posteriorMean(numParameters);
+  arma::vec posteriorMedian(numParameters);
+  arma::mat posteriorQuantiles(numParameters, 5);  // Compute quantiles at 0.1, 0.25, 0.5 (median), 0.75, 0.9
+  arma::mat posteriorCI(numParameters, 2);  // Compute 95% confidence intervals
+
+  // Define quantiles we would like to compute
+  arma::vec quantiles = {0.1, 0.25, 0.5, 0.75, 0.9};
+  for (int i = 0; i < numParameters; ++i) {
+    const arma::vec& parameterSamples = posteriorSamples.col(i);
+
+    // Compute posterior mean
+    posteriorMean(i) = arma::mean(parameterSamples);
+
+    // Compute posterior median
+    posteriorMedian(i) = arma::median(parameterSamples);
+
+    // Compute posterior quantiles
+    posteriorQuantiles.row(i) = arma::quantile(parameterSamples, quantiles).t();
+
+    // Compute posterior confidence intervals (assuming normal distribution)
+    double z = 1.96;  // 95% confidence interval
+    double stdError = arma::stddev(parameterSamples) / std::sqrt(numSamples);
+    posteriorCI(i, 0) = posteriorMean(i) - z * stdError;
+    posteriorCI(i, 1) = posteriorMean(i) + z * stdError;
+  }
+
+  // Return posterior summaries as a list
+  return Rcpp::List::create(Rcpp::Named("posteriorMean") = posteriorMean,
+                            Rcpp::Named("posteriorMedian") = posteriorMedian,
+                            Rcpp::Named("posteriorQuantiles") = posteriorQuantiles,
+                            Rcpp::Named("posteriorCI") = posteriorCI);
+}
+
 // ABC function
 // Parameters:
 // - model: Model function to generate simulated data based on input params (e.g., as an Rcpp::Function)
@@ -287,6 +331,7 @@ arma::mat abc(const Rcpp::Function model, const arma::vec& params, const arma::m
   // Initialize containers for parameter samples and posterior summaries
   arma::mat parameterSamples(numParticles, params.n_cols);
   arma::mat posteriorSamples;
+  // Rcpp::List posteriorSummaries; TODO: uncomment when working
 
   // Start ABC algorithm
   for(int i = 0 ; i < numIters ; ++i){
@@ -309,8 +354,25 @@ arma::mat abc(const Rcpp::Function model, const arma::vec& params, const arma::m
     // Estimate posterior distribution based on accepted parameter samples and weights
     arma::mat new_posteriorSamples = estimatePosterior(accepted["acceptedParamSamples"], accepted["weights"]);
     // Add new posterior samples to existing posterior samples
-    posteriorSamples = arma::join_rows(posteriorSamples, new_posteriorSamples);
+    posteriorSamples = arma::join_rows(parameterSamples, new_posteriorSamples);
+
+    // Perform posterior inference (e.g., compute posterior summaries)
+    // Rcpp::List new_posteriorSummaries = performInference(posteriorSamples);
+    // Add new posterior summaries to existing posterior summaries
+    // posteriorSummaries = Rcpp::List::create(
+    //   Rcpp::Named("posteriorMean") = arma::join_cols(posteriorSummaries["posteriorMean"], new_posteriorSummaries["posteriorMean"]),
+    //   Rcpp::Named("posteriorMedian") = arma::join_cols(posteriorSummaries["posteriorMedian"], new_posteriorSummaries["posteriorMedian"]),
+    //   Rcpp::Named("posteriorQuantiles") = arma::join_cols(posteriorSummaries["posteriorQuantiles"], new_posteriorSummaries["posteriorQuantiles"]),
+    //   Rcpp::Named("posteriorCI") = arma::join_cols(posteriorSummaries["posteriorCI"], new_posteriorSummaries["posteriorCI"])
+    // );
+    // TODO: above currently not working
   }
-  return posteriorSamples;
+  // Return parameter samples and posterior summaries as an Rcpp List
+  // return Rcpp::List::create(
+  //   Rcpp::Named("parameterSamples") = parameterSamples,
+  //   Rcpp::Named("posteriorSummaries") = posteriorSummaries
+  // );
+  // TODO: uncomment when working
+  return parameterSamples;
 }
 
