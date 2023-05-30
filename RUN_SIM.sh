@@ -2,14 +2,14 @@
 # Intractable Models Simulation Study
 # 
 # Run Entire Simulation from Command Line
-#   1. Generate all relevant plots
-# 	2. Generate data, run SIR models, obtain outcome and record
-#   3. Interpret outcome results
+#   1. Generate SIR model data with "true" parameters
+# 	2. ABC to estimate patameters
+#   3. Interpret parameter estimation results results
 # 
 # Henry Bourne, Rachel Wood, Emma Tarmey
 #
 # Started:          23/05/2023
-# Most Recent Edit: 23/05/2023
+# Most Recent Edit: 31/05/2023
 # ****************************************
 
 
@@ -17,18 +17,18 @@ clear
 echo " *** ✨ Starting ✨ ***"
 
 
-# Generate all relevant plots
+# Generate SIR model data
 echo ""
 echo ""
-echo " *** Generating Plots ***"
+echo " *** Generating Data ***"
 Rscript generate_data.R
 
 
-# Run SIR model
-echo ""
-echo ""
-echo " *** Performing Simulation ***"
-Rscript simulation.R
+# Generate SIR model data
+#echo ""
+#echo ""
+#echo " *** Parameter Estimation Simulation ***"
+#Rscript simulation.R
 
 
 # Interpret results
