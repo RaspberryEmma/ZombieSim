@@ -23,9 +23,8 @@ suppressPackageStartupMessages({
   library(tidyverse)
 })
 
-source("generate_data.R")
-abc <- Rcpp::sourceCpp("abc.cpp")
-sl  <- Rcpp::sourceCpp("sl.cpp")
+source("R/generate_data.R")
+abc <- Rcpp::sourceCpp("src/abc.cpp")
 
 
 # ----- Simulation Functions -----
@@ -58,7 +57,7 @@ results.s1    <- array(data     = NA,
 
 for (i in 1:N) {
   # Generate synthetic data
-  current.data <- generate.start.cond(size = n)
+  current.data <- generate.start.cond(total.N = n)
   
   # Run SIR model to obtain outcome
   current.outcomes <- SIR.model(start.cond  = current.data,

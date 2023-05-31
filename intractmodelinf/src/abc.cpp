@@ -311,6 +311,7 @@ Rcpp::List performInference(const arma::mat& posteriorSamples) {
                             Rcpp::Named("posteriorCI") = posteriorCI);
 }
 
+
 //' ABC function
 //'
 //' @param model Model function to generate simulated data based on input params (e.g., as an Rcpp::Function)
@@ -322,14 +323,14 @@ Rcpp::List performInference(const arma::mat& posteriorSamples) {
 //'
 //' @return parameterSamples Generated parameter samples (e.g., as an Armadillo matrix or vector)
 //' @return posteriorSummaries Posterior summaries (e.g., as an Armadillo matrix or vector)
-
+// [[Rcpp::export]]
 arma::mat abc(const Rcpp::Function model, const arma::vec& params, const arma::mat& observedData,
-                int numParticles, int numIters, double epsilon, arma::vec priorMin = {0.0, 0.0, 0.0, 0.0, 0.0}, arma::vec priorMax={0.1, 0.1, 0.1, 0.1, 0.1}) {
+               const int numParticles, const int numIters, const double epsilon, const arma:vec priorMin = {0.0, 0.0, 0.0, 0.0, 0.0}, const arma::vec priorMax={0.1, 0.1, 0.1, 0.1, 0.1}) {
   // Initialize containers for parameter samples and posterior summaries
   arma::mat parameterSamples(numParticles, params.n_cols);
   arma::mat posteriorSamples;
   // Rcpp::List posteriorSummaries; TODO: uncomment when working
-
+  
   // Start ABC algorithm
   for(int i = 0 ; i < numIters ; ++i){
     // Generate parameter samples from prior 
