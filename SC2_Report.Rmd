@@ -1,0 +1,41 @@
+---
+title: "Using ABC to Infer Parameters of a Simulated Zombie Epidemic"
+author: "Henry Bourne, Emma Tarmey, Rachel Wood"
+output: 
+  pdf_document:
+    keep_tex: yes
+date: "June 2023"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      dev = 'pdf',
+                      pdf.options(encoding = "ISOLatin9.enc"),
+                      message = FALSE,
+                      warning = FALSE,
+                      tidy.opts = list(width.cutoff=50), tidy=TRUE,
+                      fig.pos ="H", out.width = '60%',
+                      fig.align = 'center'
+                      )
+```
+
+# The REVISIT package 
+
+\textbf{Need to create a package with appropriate folders and documentation - am happy to start on this}
+
+## Documentation
+
+## Integration of R and C++
+
+## Simulations
+
+## Parallelisation
+
+# Simulating an Epidemic
+
+# Implementing ABC
+
+# Checking Results
+
+
+
