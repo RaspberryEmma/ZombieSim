@@ -90,7 +90,3 @@ performInference <- function(posteriorSamples) {
     .Call(`_intractmodelinf_performInference`, posteriorSamples)
 }
 
-synthetic_likelihood <- function(y, X) {
-    .Call(`_intractmodelinf_sl`, y, X)
-}
-
