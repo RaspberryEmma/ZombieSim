@@ -31,7 +31,7 @@ knitr::opts_chunk$set(echo = TRUE,
 
 ## Parallelisation
 
-# Simulating an Epidemic
+# Generating SZR models
 
 # Implementing ABC
 

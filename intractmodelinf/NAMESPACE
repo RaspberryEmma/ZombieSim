@@ -1,3 +1,4 @@
 useDynLib(intractmodelinf, .registration=TRUE)
 importFrom(Rcpp, evalCpp)
 exportPattern("^[[:alpha:]]+")
+Depends(RcppArmadillo)

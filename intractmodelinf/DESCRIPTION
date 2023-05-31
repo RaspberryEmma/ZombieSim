@@ -7,5 +7,5 @@ Author: Henry Bourne, Emma Tarmey and Rachel Wood
 Maintainer: Your Name <your@email.com>
 Description: One paragraph description of what the package does as one or more full sentences.
 License: GPL (>= 2)
-Imports: Rcpp (>= 1.0.10)
+Imports: Rcpp (>= 1.0.10), RcppArmadillo
 LinkingTo: Rcpp
