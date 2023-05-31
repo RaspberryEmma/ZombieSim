@@ -19,6 +19,23 @@ knitr::opts_chunk$set(echo = TRUE,
                       )
 ```
 
-# Computational Techniques and Tools
+# The REVISIT package 
 
-## The `
+\textbf{Need to create a package with appropriate folders and documentation - am happy to start on this}
+
+## Documentation
+
+## Integration of R and C++
+
+## Simulations
+
+## Parallelisation
+
+# Simulating an Epidemic
+
+# Implementing ABC
+
+# Checking Results
+
+
+
