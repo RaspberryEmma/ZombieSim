@@ -1,9 +1,9 @@
 Package: intractmodelinf
 Type: Package
-Title: What the Package Does in One 'Title Case' Line
+Title: Provides functions for inference of parameters in models with intractable likelihoods
 Version: 1.0
 Date: 2023-05-31
-Author: Your Name
+Author: Henry Bourne, Emma Tarmey and Rachel Wood
 Maintainer: Your Name <your@email.com>
 Description: One paragraph description of what the package does as one or more full sentences.
 License: GPL (>= 2)
