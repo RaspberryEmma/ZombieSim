@@ -1,7 +1,7 @@
 library(testthat)
 library(Rcpp)
 
-sourceCpp("abc.cpp")
+sourceCpp("src/abc.cpp")
 
 test_that("generateParameterSamples returns correct output", {
     # Positive test case

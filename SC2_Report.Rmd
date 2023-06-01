@@ -73,7 +73,7 @@ write.csv( UK.example,          file = "data/UK_example.csv", row.names = FALSE 
 
 ## Parallelisation
 
-# Simulating an Epidemic
+# Generating SZR models
 
 # Implementing ABC
 
