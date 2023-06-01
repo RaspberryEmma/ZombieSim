@@ -12,16 +12,16 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // generateParameterSamples
-arma::mat generateParameterSamples(int numParams, int numParticles, arma::vec priorMin, arma::vec priorMax);
-RcppExport SEXP _intractmodelinf_generateParameterSamples(SEXP numParamsSEXP, SEXP numParticlesSEXP, SEXP priorMinSEXP, SEXP priorMaxSEXP) {
+arma::mat generateParameterSamples(int numParticles, int numParams, arma::vec priorMin, arma::vec priorMax);
+RcppExport SEXP _intractmodelinf_generateParameterSamples(SEXP numParticlesSEXP, SEXP numParamsSEXP, SEXP priorMinSEXP, SEXP priorMaxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type numParams(numParamsSEXP);
     Rcpp::traits::input_parameter< int >::type numParticles(numParticlesSEXP);
+    Rcpp::traits::input_parameter< int >::type numParams(numParamsSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type priorMin(priorMinSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type priorMax(priorMaxSEXP);
-    rcpp_result_gen = Rcpp::wrap(generateParameterSamples(numParams, numParticles, priorMin, priorMax));
+    rcpp_result_gen = Rcpp::wrap(generateParameterSamples(numParticles, numParams, priorMin, priorMax));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -85,6 +85,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// abc
+arma::mat abc(const arma::mat& observedData, const int numParticles, const int numIters, const double epsilon);
+RcppExport SEXP _intractmodelinf_abc(SEXP observedDataSEXP, SEXP numParticlesSEXP, SEXP numItersSEXP, SEXP epsilonSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type observedData(observedDataSEXP);
+    Rcpp::traits::input_parameter< const int >::type numParticles(numParticlesSEXP);
+    Rcpp::traits::input_parameter< const int >::type numIters(numItersSEXP);
+    Rcpp::traits::input_parameter< const double >::type epsilon(epsilonSEXP);
+    rcpp_result_gen = Rcpp::wrap(abc(observedData, numParticles, numIters, epsilon));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_intractmodelinf_generateParameterSamples", (DL_FUNC) &_intractmodelinf_generateParameterSamples, 4},
@@ -93,6 +107,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_intractmodelinf_calculateDistance", (DL_FUNC) &_intractmodelinf_calculateDistance, 2},
     {"_intractmodelinf_acceptRejectAndUpdate", (DL_FUNC) &_intractmodelinf_acceptRejectAndUpdate, 3},
     {"_intractmodelinf_estimatePosterior", (DL_FUNC) &_intractmodelinf_estimatePosterior, 2},
+    {"_intractmodelinf_abc", (DL_FUNC) &_intractmodelinf_abc, 4},
     {NULL, NULL, 0}
 };
 
