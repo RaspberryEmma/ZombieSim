@@ -85,17 +85,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// performInference
-Rcpp::List performInference(const arma::mat& posteriorSamples);
-RcppExport SEXP _intractmodelinf_performInference(SEXP posteriorSamplesSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type posteriorSamples(posteriorSamplesSEXP);
-    rcpp_result_gen = Rcpp::wrap(performInference(posteriorSamples));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_intractmodelinf_generateParameterSamples", (DL_FUNC) &_intractmodelinf_generateParameterSamples, 4},
@@ -104,7 +93,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_intractmodelinf_calculateDistance", (DL_FUNC) &_intractmodelinf_calculateDistance, 2},
     {"_intractmodelinf_acceptRejectAndUpdate", (DL_FUNC) &_intractmodelinf_acceptRejectAndUpdate, 3},
     {"_intractmodelinf_estimatePosterior", (DL_FUNC) &_intractmodelinf_estimatePosterior, 2},
-    {"_intractmodelinf_performInference", (DL_FUNC) &_intractmodelinf_performInference, 1},
     {NULL, NULL, 0}
 };
 

@@ -78,15 +78,3 @@ estimatePosterior <- function(acceptedSamples, weights) {
     .Call(`_intractmodelinf_estimatePosterior`, acceptedSamples, weights)
 }
 
-#' Perform posterior inference and compute posterior summaries
-#'
-#' @param posteriorSamples Matrix of posterior parameter samples (each row represents a set of posterior parameter values)
-#'
-#' @return posteriorMean Vector of posterior means for each parameter
-#' @return posteriorMedian Vector of posterior medians for each parameter
-#' @return posteriorQuantiles Matrix of posterior quantiles for each parameter (columns represent quantiles)
-#' @return posteriorCI Matrix of posterior confidence intervals for each parameter (columns represent lower and upper bounds)
-performInference <- function(posteriorSamples) {
-    .Call(`_intractmodelinf_performInference`, posteriorSamples)
-}
-

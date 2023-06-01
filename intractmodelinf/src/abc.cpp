@@ -298,9 +298,10 @@ arma::mat abc(const Rcpp::Function model, const arma::vec& params, const arma::m
 
       // Estimate posterior distribution based on accepted parameter samples and weights
       arma::mat new_posteriorSamples = estimatePosterior(accepted["acceptedParamSamples"], accepted["weights"]);
+
       // Add new posterior samples to existing posterior samples
-      posteriorSamples = arma::join_rows(parameterSamples, new_posteriorSamples);
+      posteriorSamples = arma::join_rows(posteriorSamples, new_posteriorSamples);
     }
-    return parameterSamples;
+    return posteriorSamples;
 }
 
