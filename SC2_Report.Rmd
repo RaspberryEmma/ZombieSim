@@ -97,11 +97,11 @@ We use this to simulate an outbreak for 3 different populations of different siz
 The data on these simulated outbreaks is included in our package
 
 ```{r}
-bristol.N     <-500000
-new.example <- generate.SZR.data(total.N= bristol.N,
+bristol.N     <-5000
+new.example <- generate.SZR.data(N= bristol.N,
                   initial.inf = 10,
-                  total.T     = 150)
-write.csv(new.example, file = "intractmodelinf/data/new_example.csv")
+                  total.T     = 50)
+#write.csv(new.example, file = "intractmodelinf/data/new_example.csv")
 ```
 
 # Implementing ABC
@@ -115,7 +115,8 @@ write.csv(new.example, file = "intractmodelinf/data/new_example.csv")
 
 legend.colors <- c("Susceptible" = "red", "Zombies" = "blue", "Removed" = "green")
 source(file = "intractmodelinf/R/plots.R")
-plot.SZR(bristol.example)
+
+plot.SZR(new.example$results)
 ```
 
 

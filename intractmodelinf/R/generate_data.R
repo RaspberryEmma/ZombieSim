@@ -23,22 +23,26 @@ suppressPackageStartupMessages({
 
 
 
-# ----- Synthetic Data Generation -----
-
-generate.start.cond <- function(total.N = NULL, initial.inf = NULL) {
+generate.start.cond <- function(N = NULL, initial.inf = NULL, beta =  2/(N), kappa = 3/(N), rho = 1/N){
   # central model parameters
-  beta <- rnorm(n = 1, mean = 0.000005, sd = 0.0000001) # contact rate, the "R statistic" (R_0)
-  kappa <- rnorm(n = 1, mean = 0.00001, sd = 0.0000002) # kill rate
-  rho <- rnorm(n=1, mean = 0.00002, sd = 0.000002)   # resurrection rate
+  #beta <- rnorm(n = 1, mean = 2/(N), sd = 1/(10 * N^2)) # contact rate, the "R statistic" (R_0)
+  #kappa <- rnorm(n = 1, mean = 3/(N), sd = 1/(10 * N^2)) # kill rate
+  #rho <- rnorm(n=1, mean =1/(N), sd =1/(10 * N^2))   # resurrection rate
   
   # initial population values
   Z.0 <- as.integer( initial.inf )      # initial infected population total (small)
-  S.0 <- as.integer( total.N - Z.0)     # initial susceptible population total (large)
+  S.0 <- as.integer( N - Z.0)     # initial susceptible population total (large)
   R.0 <- as.integer( 0 )                # initial recovered population total (zero)
   
-  cond <- c(S.0, Z.0, R.0, total.N, beta, kappa, rho)
+  return.val <- list(
+    populations = c(S.0, Z.0, R.0),
+    N = N,
+    beta = beta,
+    kappa = kappa,
+    rho = rho
+  )
   
-  return (cond)
+  return (return.val)
 }
 
 
@@ -55,24 +59,24 @@ resurrected <-function(rho, r) {
 }
 
 
-generate.SZR.data <- function(total.N = NULL, initial.inf = NULL, total.T = NULL) {
+generate.SZR.data <- function(N = NULL, initial.inf = NULL, total.T = NULL) {
   
   # initial model conditions
-  cond <- generate.start.cond(total.N = total.N, initial.inf = initial.inf)
+  cond <- generate.start.cond(N = N, initial.inf = initial.inf)
   
   # constant model parameters
-  N       <- total.N
-  beta    <- cond[5]
-  kappa   <- cond[6]
-  rho     <- cond[7]
+  N       <- cond$N
+  beta    <- cond$beta
+  kappa   <- cond$kappa
+  rho     <- cond$rho
   
   
   # results array to hold values of each function at times 1 to total.T
-  results <- array(data = NA, dim = c(total.T, length(cond)+1) )
-  results[1, ] <- c(1, cond)
+  results <- array(data = NA, dim = c(total.T, length(cond$populations)+1) )
+  results[1, ] <- c(1, cond$populations)
   
   # vector to hold current sim values
-  values.t <- c(1, cond)
+  values.t <- c(1, cond$populations)
   
   # run through SIR simulation for times 2 to total.T
   # results vector indices 1=S, 2=Z, 3=R
@@ -80,19 +84,27 @@ generate.SZR.data <- function(total.N = NULL, initial.inf = NULL, total.T = NULL
     infected.t    <- infected(   beta,  values.t[2], values.t[3])
     killed.t      <- killed(     kappa, values.t[2], values.t[3])
     resurrected.t <- resurrected(rho,   values.t[4])
-    S.t <- values.t[2] - infected.t
-    Z.t <- values.t[3] + infected.t - killed.t + resurrected.t
-    R.t <- values.t[4] + killed.t - resurrected.t
     
-    values.t     <- c(t, S.t, Z.t, R.t, total.N, beta, kappa, rho)
+    S <- values.t[2] - infected.t
+    Z <- values.t[3] + infected.t - killed.t + resurrected.t
+    R <- values.t[4] + killed.t - resurrected.t
+    
+    values.t     <- c(t, S, Z, R)
     results[t, ] <- values.t
   }
   
   # convert to data.frame to explicitly record column meaning
   results           <- as.data.frame(results)
-  colnames(results) <- c("t", "S.t", "Z.t", "R.t", "N", "beta", "kappa", "rho")
+  colnames(results) <- c("t", "S.t", "Z.t", "R.t")
   
-  return ( results )
+  return.val <- list(
+    results = results,
+    N = N,
+    beta = beta,
+    kappa = kappa,
+    rho = rho
+  )
+  return (return.val)
 }
 
 
