@@ -1,5 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
+#include <Rcpp.h>
 using namespace arma;
 using namespace Rcpp;
 
@@ -13,7 +14,7 @@ using namespace Rcpp;
 //'
 //' @return  parameterSamples Generated parameter samples as an Armadillo matrix
 // [[Rcpp::export]]
-arma::mat generateParameterSamples(int numParams, int numParticles, arma::vec priorMin, arma::vec priorMax) {
+arma::mat generateParameterSamples(int numParticles, int numParams, arma::vec priorMin, arma::vec priorMax) {
   // Check if the number of parameters is greater than zero
   if (numParams <= 0) {
     Rcpp::stop("The number of parameters must be greater than zero.");
@@ -38,11 +39,9 @@ arma::mat generateParameterSamples(int numParams, int numParticles, arma::vec pr
       parameterSamples(i, j) = arma::randu() * (priorMax(j) - priorMin(j)) + priorMin(j);
     }
   }
-
   // Return the parameter samples
   return parameterSamples;
 }
-// TODO: adjust prior distribution, although above does seem to roughly work (but change in 3 populations is aggressive)
 
 //' Function to generate simulated data from the zombie outbreak model
 //'
@@ -54,16 +53,16 @@ arma::mat generateParameterSamples(int numParams, int numParticles, arma::vec pr
 // [[Rcpp::export]]
 arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints) {
   int numParticles = parameters.n_rows; // Number of parameter samples
-  arma::cube simulatedData(numParticles, numTimePoints, 3, arma::fill::zeros);
+  arma::cube simulatedData(numTimePoints, 3, numParticles, arma::fill::zeros);
   for (int i = 0; i < numParticles; ++i) {
     // Initialize populations with initial values
     double S = 500; // Initial susceptible population size
     double Z = 1; // Initial infected (zombie) population size
     double R = 0; // Initial number removed from the population
     
-    simulatedData(i, 0, 0) = S;
-    simulatedData(i, 0, 1) = Z;
-    simulatedData(i, 0, 2) = R;
+    simulatedData(0, 0, i) = S;
+    simulatedData(0, 1, i) = Z;
+    simulatedData(0, 2, i) = R;
 
     for (int t = 1; t < numTimePoints; ++t) {
       // Retrieve parameter values for the current sample
@@ -95,9 +94,9 @@ arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints)
       int newR = R + deathRate * S + defeatRate * S * Z - resurrectionRate * R;   // Update removed individuals
 
       // Store the population sizes in the simulated data cube
-      simulatedData(i, t, 0) = newS;
-      simulatedData(i, t, 1) = newZ;
-      simulatedData(i, t, 2) = newR;
+      simulatedData(t, 0, i) = newS;
+      simulatedData(t, 1, i) = newZ;
+      simulatedData(t, 2, i) = newR;
 
       // Update population sizes for the next time step
       S = newS;
@@ -105,10 +104,8 @@ arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints)
       R = newR;
     }
   }
-
   return simulatedData;
 }
-// TODO: sometimes simulation goes negative
 
 //' Function to compute summary statistics for simulated data from the zombie outbreak model
 //'
@@ -118,12 +115,12 @@ arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints)
 // [[Rcpp::export]]
 arma::mat computeSummaryStatistics(const arma::cube& simulatedData) {
   int numStats = 9; // Number of summary statistics
-  int numParticles = simulatedData.n_rows;
-  int numTimePoints = simulatedData.n_cols;
+  int numParticles = simulatedData.n_slices;
+  int numTimePoints = simulatedData.n_rows;
   arma::mat summaryStats(numParticles, numStats, arma::fill::zeros);
 
   for (int i = 0; i < numParticles; ++i) {
-    const arma::mat& sampleData = simulatedData.row(i);
+    const arma::mat& sampleData = simulatedData.slice(i);
 
     // Compute summary statistics
     double finalSusceptible = sampleData(numTimePoints - 1, 0);
@@ -150,7 +147,6 @@ arma::mat computeSummaryStatistics(const arma::cube& simulatedData) {
 
   return summaryStats;
 }
-// TODO: these summaries I want?
 
 //' Function to calculate the euclidean distance between observed and simulated data
 //'
@@ -160,10 +156,10 @@ arma::mat computeSummaryStatistics(const arma::cube& simulatedData) {
 //' @return distances Vector of distances between observed and simulated data points
 // [[Rcpp::export]]
 arma::mat calculateDistance(const arma::mat& observedData, const arma::cube& simulatedData) {
-  // Get the number of data points
+  // Get the number of time points
   int numTimePoints = observedData.n_rows;
   // Get the number of particles
-  int numParticles = simulatedData.n_rows;
+  int numParticles = simulatedData.n_slices;
 
   // Create a vector to store the distances
   arma::mat distances(numTimePoints, numParticles);
@@ -180,11 +176,9 @@ arma::mat calculateDistance(const arma::mat& observedData, const arma::cube& sim
       distances(i,j) = arma::norm(observedPoint - simulatedPoint, 2);  // Euclidean distance
     }
   }
-
   // Return the distances
   return distances;
 }
-// TODO: Euclidian distance correct?
 
 
 //' Perform acceptance/rejection of parameter samples and update with weights
@@ -228,7 +222,6 @@ Rcpp::List acceptRejectAndUpdate(const arma::mat& parameterSamples, const arma::
   return Rcpp::List::create(Rcpp::Named("acceptedParamSamples") = acceptedParamSamples,
                             Rcpp::Named("weights") = weights);
 }
-// TODO: weights correct here?
 
 
 //' Estimate the posterior distribution based on accepted parameter samples and weights
@@ -263,116 +256,54 @@ arma::mat estimatePosterior(const arma::mat& acceptedSamples, const arma::vec& w
   return posteriorSamples;
 }
 
-//' Perform posterior inference and compute posterior summaries
-//'
-//' @param posteriorSamples Matrix of posterior parameter samples (each row represents a set of posterior parameter values)
-//'
-//' @return posteriorMean Vector of posterior means for each parameter
-//' @return posteriorMedian Vector of posterior medians for each parameter
-//' @return posteriorQuantiles Matrix of posterior quantiles for each parameter (columns represent quantiles)
-//' @return posteriorCI Matrix of posterior confidence intervals for each parameter (columns represent lower and upper bounds)
-// [[Rcpp::export]]
-Rcpp::List performInference(const arma::mat& posteriorSamples) {
-  // Get the number of posterior samples and parameters
-  int numSamples = posteriorSamples.n_rows;
-  int numParameters = posteriorSamples.n_cols;
-
-  // Compute posterior summaries
-  arma::vec posteriorMean(numParameters);
-  arma::vec posteriorMedian(numParameters);
-  arma::mat posteriorQuantiles(numParameters, 5);  // Compute quantiles at 0.1, 0.25, 0.5 (median), 0.75, 0.9
-  arma::mat posteriorCI(numParameters, 2);  // Compute 95% confidence intervals
-
-  // Define quantiles we would like to compute
-  arma::vec quantiles = {0.1, 0.25, 0.5, 0.75, 0.9};
-  for (int i = 0; i < numParameters; ++i) {
-    const arma::vec& parameterSamples = posteriorSamples.col(i);
-
-    // Compute posterior mean
-    posteriorMean(i) = arma::mean(parameterSamples);
-
-    // Compute posterior median
-    posteriorMedian(i) = arma::median(parameterSamples);
-
-    // Compute posterior quantiles
-    posteriorQuantiles.row(i) = arma::quantile(parameterSamples, quantiles).t();
-
-    // Compute posterior confidence intervals (assuming normal distribution)
-    double z = 1.96;  // 95% confidence interval
-    double stdError = arma::stddev(parameterSamples) / std::sqrt(numSamples);
-    posteriorCI(i, 0) = posteriorMean(i) - z * stdError;
-    posteriorCI(i, 1) = posteriorMean(i) + z * stdError;
-  }
-
-  // Return posterior summaries as a list
-  return Rcpp::List::create(Rcpp::Named("posteriorMean") = posteriorMean,
-                            Rcpp::Named("posteriorMedian") = posteriorMedian,
-                            Rcpp::Named("posteriorQuantiles") = posteriorQuantiles,
-                            Rcpp::Named("posteriorCI") = posteriorCI);
-}
-
-
 //' ABC function
 //'
-//' @param model Model function to generate simulated data based on input params (e.g., as an Rcpp::Function)
-//' @param params Parameter values (e.g., as an Armadillo vector)
 //' @param observedData Observed data (e.g., as an Armadillo matrix or vector)
 //' @param numParticles Number of particles/samples to generate
 //' @param numIters Number of iterations
 //' @param epsilon Tolerance threshold
 //'
-//' @return parameterSamples Generated parameter samples (e.g., as an Armadillo matrix or vector)
-//' @return posteriorSummaries Posterior summaries (e.g., as an Armadillo matrix or vector)
-
+//' @return posteriorSamples Generated posterior parameter samples (e.g., as an Armadillo matrix)
+//' @export
 // [[Rcpp::export]]
-arma::mat abc(const Rcpp::Function model, const arma::vec& params, const arma::mat& observedData, 
-              const int numParticles, const int numIters, const double epsilon, const arma::vec priorMin = {0.0, 0.0, 0.0, 0.0, 0.0}, const arma::vec priorMax={0.1, 0.1, 0.1, 0.1, 0.1}) 
-  {
-    // Initialize containers for parameter samples and posterior summaries
-    arma::mat parameterSamples(numParticles, params.n_cols);
-    arma::mat posteriorSamples;
-    // Rcpp::List posteriorSummaries; TODO: uncomment when working
-  
-    // Start ABC algorithm
-    for(int i = 0 ; i < numIters ; ++i){
-      // Generate parameter samples from prior 
-      parameterSamples = generateParameterSamples(params.size(), numParticles, priorMin, priorMax);
+arma::mat run_abc(const arma::mat& observedData, const int numParticles, const int numIters, const double epsilon = 0.1){
+  // Check the dimensions of the observed data
+  if (observedData.n_cols != 3) {
+    Rcpp::stop("The observed data must have three columns.");
+  }
+  // TODO: make these changeable from arguments
+  const arma::vec priorMin = {0.0, 0.0, 0.0, 0.0, 0.0};
+  const arma::vec priorMax={0.1, 0.1, 0.1, 0.1, 0.1};
+  int numParams = 5;
 
-      // Generate simulated data based on parameter samples
-      int numTimePoints = observedData.n_rows;
-      arma::cube simulatedData = generateSimulatedData(params, numTimePoints);
+  // Initialize containers for parameter samples and posterior summaries
+  arma::mat parameterSamples(numParticles, numParams);
+  arma::mat posteriorSamples;
 
-      // Compute summary statistics for simulated data
-      arma::mat simulatedSummaries = computeSummaryStatistics(simulatedData);
+  // Start ABC algorithm
+  for(int i = 0 ; i < numIters ; ++i){
+    // Generate parameter samples from prior 
+    parameterSamples = generateParameterSamples(numParticles, numParams, priorMin, priorMax);
 
-      // Compute distance between observed and simulated data
-      arma::mat distances = calculateDistance(observedData, simulatedData);
+    // Generate simulated data based on parameter samples
+    int numTimePoints = observedData.n_rows;
+    arma::cube simulatedData = generateSimulatedData(parameterSamples, numTimePoints);
 
-      // Compare distance to tolerance threshold and accept/reject parameter samples and update parameter samples based on acceptance/rejection step, assign higher weights to accepted samples
-      Rcpp::List accepted = acceptRejectAndUpdate(parameterSamples, distances, epsilon);
+    // Compute summary statistics for simulated data
+    arma::mat simulatedSummaries = computeSummaryStatistics(simulatedData);
 
-      // Estimate posterior distribution based on accepted parameter samples and weights
-      arma::mat new_posteriorSamples = estimatePosterior(accepted["acceptedParamSamples"], accepted["weights"]);
-      // Add new posterior samples to existing posterior samples
-      posteriorSamples = arma::join_rows(parameterSamples, new_posteriorSamples);
+    // Compute distance between observed and simulated data
+    arma::mat distances = calculateDistance(observedData, simulatedData);
+    
+    // Compare distance to tolerance threshold and accept/reject parameter samples and update parameter samples based on acceptance/rejection step, assign higher weights to accepted samples
+    Rcpp::List accepted = acceptRejectAndUpdate(parameterSamples, distances, epsilon);
 
-      // Perform posterior inference (e.g., compute posterior summaries)
-      // Rcpp::List new_posteriorSummaries = performInference(posteriorSamples);
-      // Add new posterior summaries to existing posterior summaries
-      // posteriorSummaries = Rcpp::List::create(
-      //   Rcpp::Named("posteriorMean") = arma::join_cols(posteriorSummaries["posteriorMean"], new_posteriorSummaries["posteriorMean"]),
-      //   Rcpp::Named("posteriorMedian") = arma::join_cols(posteriorSummaries["posteriorMedian"], new_posteriorSummaries["posteriorMedian"]),
-      //   Rcpp::Named("posteriorQuantiles") = arma::join_cols(posteriorSummaries["posteriorQuantiles"], new_posteriorSummaries["posteriorQuantiles"]),
-      //   Rcpp::Named("posteriorCI") = arma::join_cols(posteriorSummaries["posteriorCI"], new_posteriorSummaries["posteriorCI"])
-      // );
-      // TODO: above currently not working
-    }
-    // Return parameter samples and posterior summaries as an Rcpp List
-    // return Rcpp::List::create(
-    //   Rcpp::Named("parameterSamples") = parameterSamples,
-    //   Rcpp::Named("posteriorSummaries") = posteriorSummaries
-    // );
-    // TODO: uncomment when working
-    return parameterSamples;
+    // Estimate posterior distribution based on accepted parameter samples and weights
+    arma::mat new_posteriorSamples = estimatePosterior(accepted["acceptedParamSamples"], accepted["weights"]);
+
+    // Add new posterior samples to existing posterior samples
+    posteriorSamples = arma::join_rows(posteriorSamples, new_posteriorSamples);
+  }
+  return posteriorSamples;
 }
 
