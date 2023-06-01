@@ -11,3 +11,4 @@ Imports: Rcpp (>= 1.0.10), RcppArmadillo
 LinkingTo: Rcpp, RcppArmadillo
 Depends: RcppArmadillo
 RoxygenNote: 7.2.3
+Encoding: UTF-8
