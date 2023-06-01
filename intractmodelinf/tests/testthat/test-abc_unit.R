@@ -1,18 +1,18 @@
 library(testthat)
 library(Rcpp)
 
-sourceCpp("src/abc.cpp")
+sourceCpp("abc.cpp")
 
 test_that("generateParameterSamples returns correct output", {
     # Positive test case
-    ps <- generateParameterSamples(3, 100, c(-1.0, -1.0, -1.0), c(1.0, 1.0, 1.0))
+    ps <- generateParameterSamples(100, 3, c(-1.0, -1.0, -1.0), c(1.0, 1.0, 1.0))
     expect_equal(dim(ps), c(100, 3))
     expect_true(all(ps > -1.0))
     expect_true(all(ps < 1.0))
     # Negative test case
-    expect_error(generateParameterSamples(-1, 100, -1.0, 1.0))
-    expect_error(generateParameterSamples(3, -100, -1.0, 1.0))
-    expect_error(generateParameterSamples(3, 100, 1.0, -1.0))
+    expect_error(generateParameterSamples(100, -1, -1.0, 1.0))
+    expect_error(generateParameterSamples(-100, 3, -1.0, 1.0))
+    expect_error(generateParameterSamples(100, 3, 1.0, -1.0))
 })
 
 # Unit tests for the generateSimulatedData function
@@ -22,7 +22,7 @@ test_that("generateSimulatedData returns the correct dimensions", {
     numTimePoints <- 10
     
     simulatedData <- generateSimulatedData(parameters, numTimePoints)
-    expect_equal(dim(simulatedData), c(numParticles, numTimePoints, 3))
+    expect_equal(dim(simulatedData), c(numTimePoints, 3, numParticles))
 })
 
 test_that("generateSimulatedData throws an error for invalid birth rate", {
@@ -49,7 +49,7 @@ test_that("computeSummaryStatistics returns correct output", {
     # Generate example simulated data
     numParticles <- 100
     numTimePoints <- 10
-    testInputParameters <- generateParameterSamples(5, numParticles, c(0.0, 0.00949, 0.0, 0.00009, 0.0049), c(0.000000001, 0.0095, 0.000000001, 0.0001, 0.005))
+    testInputParameters <- generateParameterSamples(numParticles, 5, c(0.0, 0.00949, 0.0, 0.00009, 0.0049), c(0.000000001, 0.0095, 0.000000001, 0.0001, 0.005))
     simulatedData <- generateSimulatedData(testInputParameters, numTimePoints)
     # Compute summary statistics
     summaryStats <- computeSummaryStatistics(simulatedData)
@@ -128,6 +128,7 @@ test_that("estimatePosterior returns valid posterior probabilities", {
 
   expect_true(all(posterior >= 0 & posterior <= 1))
   expect_equal(sum(posterior), 1)
+  observedData <- matrix(c(1, 3, 2, 4, 5, 6), ncol = 3)
 })
 
 # END OF FILE
