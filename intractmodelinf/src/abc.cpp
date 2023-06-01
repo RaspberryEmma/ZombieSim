@@ -323,54 +323,56 @@ Rcpp::List performInference(const arma::mat& posteriorSamples) {
 //'
 //' @return parameterSamples Generated parameter samples (e.g., as an Armadillo matrix or vector)
 //' @return posteriorSummaries Posterior summaries (e.g., as an Armadillo matrix or vector)
+
 // [[Rcpp::export]]
-arma::mat abc(const Rcpp::Function model, const arma::vec& params, const arma::mat& observedData,
-               const int numParticles, const int numIters, const double epsilon, const arma:vec priorMin = {0.0, 0.0, 0.0, 0.0, 0.0}, const arma::vec priorMax={0.1, 0.1, 0.1, 0.1, 0.1}) {
-  // Initialize containers for parameter samples and posterior summaries
-  arma::mat parameterSamples(numParticles, params.n_cols);
-  arma::mat posteriorSamples;
-  // Rcpp::List posteriorSummaries; TODO: uncomment when working
+arma::mat abc(const Rcpp::Function model, const arma::vec& params, const arma::mat& observedData, 
+              const int numParticles, const int numIters, const double epsilon, const arma::vec priorMin = {0.0, 0.0, 0.0, 0.0, 0.0}, const arma::vec priorMax={0.1, 0.1, 0.1, 0.1, 0.1}) 
+  {
+    // Initialize containers for parameter samples and posterior summaries
+    arma::mat parameterSamples(numParticles, params.n_cols);
+    arma::mat posteriorSamples;
+    // Rcpp::List posteriorSummaries; TODO: uncomment when working
   
-  // Start ABC algorithm
-  for(int i = 0 ; i < numIters ; ++i){
-    // Generate parameter samples from prior 
-    parameterSamples = generateParameterSamples(params.size(), numParticles, priorMin, priorMax);
+    // Start ABC algorithm
+    for(int i = 0 ; i < numIters ; ++i){
+      // Generate parameter samples from prior 
+      parameterSamples = generateParameterSamples(params.size(), numParticles, priorMin, priorMax);
 
-    // Generate simulated data based on parameter samples
-    int numTimePoints = observedData.n_rows;
-    arma::cube simulatedData = generateSimulatedData(params, numTimePoints);
+      // Generate simulated data based on parameter samples
+      int numTimePoints = observedData.n_rows;
+      arma::cube simulatedData = generateSimulatedData(params, numTimePoints);
 
-    // Compute summary statistics for simulated data
-    arma::mat simulatedSummaries = computeSummaryStatistics(simulatedData);
+      // Compute summary statistics for simulated data
+      arma::mat simulatedSummaries = computeSummaryStatistics(simulatedData);
 
-    // Compute distance between observed and simulated data
-    arma::mat distances = calculateDistance(observedData, simulatedData);
+      // Compute distance between observed and simulated data
+      arma::mat distances = calculateDistance(observedData, simulatedData);
 
-    // Compare distance to tolerance threshold and accept/reject parameter samples and update parameter samples based on acceptance/rejection step, assign higher weights to accepted samples
-    Rcpp::List accepted = acceptRejectAndUpdate(parameterSamples, distances, epsilon);
+      // Compare distance to tolerance threshold and accept/reject parameter samples and update parameter samples based on acceptance/rejection step, assign higher weights to accepted samples
+      Rcpp::List accepted = acceptRejectAndUpdate(parameterSamples, distances, epsilon);
 
-    // Estimate posterior distribution based on accepted parameter samples and weights
-    arma::mat new_posteriorSamples = estimatePosterior(accepted["acceptedParamSamples"], accepted["weights"]);
-    // Add new posterior samples to existing posterior samples
-    posteriorSamples = arma::join_rows(parameterSamples, new_posteriorSamples);
+      // Estimate posterior distribution based on accepted parameter samples and weights
+      arma::mat new_posteriorSamples = estimatePosterior(accepted["acceptedParamSamples"], accepted["weights"]);
+      // Add new posterior samples to existing posterior samples
+      posteriorSamples = arma::join_rows(parameterSamples, new_posteriorSamples);
 
-    // Perform posterior inference (e.g., compute posterior summaries)
-    // Rcpp::List new_posteriorSummaries = performInference(posteriorSamples);
-    // Add new posterior summaries to existing posterior summaries
-    // posteriorSummaries = Rcpp::List::create(
-    //   Rcpp::Named("posteriorMean") = arma::join_cols(posteriorSummaries["posteriorMean"], new_posteriorSummaries["posteriorMean"]),
-    //   Rcpp::Named("posteriorMedian") = arma::join_cols(posteriorSummaries["posteriorMedian"], new_posteriorSummaries["posteriorMedian"]),
-    //   Rcpp::Named("posteriorQuantiles") = arma::join_cols(posteriorSummaries["posteriorQuantiles"], new_posteriorSummaries["posteriorQuantiles"]),
-    //   Rcpp::Named("posteriorCI") = arma::join_cols(posteriorSummaries["posteriorCI"], new_posteriorSummaries["posteriorCI"])
+      // Perform posterior inference (e.g., compute posterior summaries)
+      // Rcpp::List new_posteriorSummaries = performInference(posteriorSamples);
+      // Add new posterior summaries to existing posterior summaries
+      // posteriorSummaries = Rcpp::List::create(
+      //   Rcpp::Named("posteriorMean") = arma::join_cols(posteriorSummaries["posteriorMean"], new_posteriorSummaries["posteriorMean"]),
+      //   Rcpp::Named("posteriorMedian") = arma::join_cols(posteriorSummaries["posteriorMedian"], new_posteriorSummaries["posteriorMedian"]),
+      //   Rcpp::Named("posteriorQuantiles") = arma::join_cols(posteriorSummaries["posteriorQuantiles"], new_posteriorSummaries["posteriorQuantiles"]),
+      //   Rcpp::Named("posteriorCI") = arma::join_cols(posteriorSummaries["posteriorCI"], new_posteriorSummaries["posteriorCI"])
+      // );
+      // TODO: above currently not working
+    }
+    // Return parameter samples and posterior summaries as an Rcpp List
+    // return Rcpp::List::create(
+    //   Rcpp::Named("parameterSamples") = parameterSamples,
+    //   Rcpp::Named("posteriorSummaries") = posteriorSummaries
     // );
-    // TODO: above currently not working
-  }
-  // Return parameter samples and posterior summaries as an Rcpp List
-  // return Rcpp::List::create(
-  //   Rcpp::Named("parameterSamples") = parameterSamples,
-  //   Rcpp::Named("posteriorSummaries") = posteriorSummaries
-  // );
-  // TODO: uncomment when working
-  return parameterSamples;
+    // TODO: uncomment when working
+    return parameterSamples;
 }
 
