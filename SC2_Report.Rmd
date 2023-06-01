@@ -29,6 +29,48 @@ knitr::opts_chunk$set(echo = TRUE,
 
 ## Simulations
 
+```{r}
+# ----- Working Examples -----
+
+# Replace source call with install.github() and library calls when package is finished!
+# install.github("https://github.com/RaspberryEmma/Intractable-Models-Sim-Study")
+# library(intractmodelinf)
+
+source("intractmodelinf/R/generate_data.R")
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(ggplot2)
+  library(knitr)
+  library(tidyverse)
+})
+
+bristol.uni.N <- 29434
+bristol.N     <- 467099
+UK.N          <- 67081234
+
+bristol.uni.example <- generate.SIR.data(total.N     = bristol.uni.N,
+                                         initial.inf = 10,
+                                         total.T     = 150)
+
+bristol.example <- generate.SIR.data(total.N     = bristol.N,
+                                     initial.inf = 10,
+                                     total.T     = 150)
+
+UK.example <- generate.SIR.data(total.N     = UK.N,
+                                initial.inf = 10,
+                                total.T     = 150)
+
+bristol.uni.example %>% head() %>% knitr::kable()
+
+
+# ----- Save Data -----
+
+write.csv( bristol.uni.example, file = "data/bristol_uni_example.csv", row.names = FALSE )
+write.csv( bristol.example,     file = "data/bristol_example.csv", row.names = FALSE )
+write.csv( UK.example,          file = "data/UK_example.csv", row.names = FALSE )
+
+```
+
 ## Parallelisation
 
 # Generating SZR models
@@ -36,6 +78,67 @@ knitr::opts_chunk$set(echo = TRUE,
 # Implementing ABC
 
 # Checking Results
+
+```{r}
+# ----- Read Results Data from CSV -----
+
+bristol.uni.example <- read.csv("data/bristol_uni_example.csv", header = TRUE)
+bristol.example     <- read.csv("data/bristol_example.csv", header = TRUE)
+UK.example          <- read.csv("data/UK_example.csv", header = TRUE)
+
+
+
+# ----- Plot Results -----
+
+legend.colors <- c("Susceptible" = "red", "Infected" = "blue", "Recovered" = "green")
+
+bristol.uni.plot <- ggplot(bristol.uni.example, aes(x = t)) +
+  geom_line(aes(y  = S.t, color = "Susceptible")) +
+  geom_line(aes(y  = I.t, color = "Infected")) +
+  geom_line(aes(y  = R.t, color = "Recovered")) +
+  labs(color = "Legend") +
+  scale_color_manual(values = legend.colors) +
+  ggtitle("SIR Model - Bristol Uni Example") +
+  xlab("Time") +
+  ylab("SIR Populations")
+
+bristol.plot <- ggplot(bristol.example, aes(x = t)) +
+  geom_line(aes(y  = S.t, color = "Susceptible")) +
+  geom_line(aes(y  = I.t, color = "Infected")) +
+  geom_line(aes(y  = R.t, color = "Recovered")) +
+  labs(color = "Legend") +
+  scale_color_manual(values = legend.colors) +
+  ggtitle("SIR Model - Bristol City Example") +
+  xlab("Time") +
+  ylab("SIR Populations")
+
+UK.plot <- ggplot(UK.example, aes(x = t)) +
+  geom_line(aes(y  = S.t, color = "Susceptible")) +
+  geom_line(aes(y  = I.t, color = "Infected")) +
+  geom_line(aes(y  = R.t, color = "Recovered")) +
+  labs(color = "Legend") +
+  scale_color_manual(values = legend.colors) +
+  ggtitle("SIR Model - UK Example") +
+  xlab("Time") +
+  ylab("SIR Populations")
+
+
+
+# ----- Save Plots -----
+
+png("plots/bristol_uni_plot.png")
+bristol.uni.plot
+dev.off()
+
+png("plots/bristol_plot.png")
+bristol.plot
+dev.off()
+
+png("plots/UK_plot.png")
+UK.plot
+dev.off()
+
+```
 
 
 

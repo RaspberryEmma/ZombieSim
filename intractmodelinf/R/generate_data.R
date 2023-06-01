@@ -92,33 +92,7 @@ generate.SIR.data <- function(total.N = NULL, initial.inf = NULL, total.T = NULL
 }
 
 
-# ----- Working Examples -----
 
-bristol.uni.N <- 29434
-bristol.N     <- 467099
-UK.N          <- 67081234
-
-bristol.uni.example <- generate.SIR.data(total.N     = bristol.uni.N,
-                                         initial.inf = 10,
-                                         total.T     = 150)
-
-bristol.example <- generate.SIR.data(total.N     = bristol.N,
-                                     initial.inf = 10,
-                                     total.T     = 150)
-
-UK.example <- generate.SIR.data(total.N     = UK.N,
-                                initial.inf = 10,
-                                total.T     = 150)
-
-bristol.uni.example
-
-
-
-# ----- Save Data -----
-
-save( bristol.uni.example, file = "data/bristol_uni_example.rda" )
-save( bristol.example,     file = "data/bristol_example.rda" )
-save( UK.example,          file = "data/UK_example.rda" )
 
 
 

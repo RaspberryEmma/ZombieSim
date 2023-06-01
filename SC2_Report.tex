@@ -34,6 +34,56 @@
 \makeatother
 \usepackage{xcolor}
 \usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
@@ -84,6 +134,66 @@
 \hypertarget{simulations}{%
 \subsection{Simulations}\label{simulations}}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# {-}{-}{-}{-}{-} Working Examples {-}{-}{-}{-}{-}}
+
+\CommentTok{\# Replace source call with install.github() and library calls when package is finished!}
+\CommentTok{\# install.github("https://github.com/RaspberryEmma/Intractable{-}Models{-}Sim{-}Study")}
+\CommentTok{\# library(intractmodelinf)}
+
+\FunctionTok{source}\NormalTok{(}\StringTok{"intractmodelinf/R/generate\_data.R"}\NormalTok{)}
+\FunctionTok{suppressPackageStartupMessages}\NormalTok{(\{}
+  \FunctionTok{library}\NormalTok{(dplyr)}
+  \FunctionTok{library}\NormalTok{(ggplot2)}
+  \FunctionTok{library}\NormalTok{(knitr)}
+  \FunctionTok{library}\NormalTok{(tidyverse)}
+\NormalTok{\})}
+
+\NormalTok{bristol.uni.N }\OtherTok{\textless{}{-}} \DecValTok{29434}
+\NormalTok{bristol.N     }\OtherTok{\textless{}{-}} \DecValTok{467099}
+\NormalTok{UK.N          }\OtherTok{\textless{}{-}} \DecValTok{67081234}
+
+\NormalTok{bristol.uni.example }\OtherTok{\textless{}{-}} \FunctionTok{generate.SIR.data}\NormalTok{(}\AttributeTok{total.N     =}\NormalTok{ bristol.uni.N,}
+                                         \AttributeTok{initial.inf =} \DecValTok{10}\NormalTok{,}
+                                         \AttributeTok{total.T     =} \DecValTok{150}\NormalTok{)}
+
+\NormalTok{bristol.example }\OtherTok{\textless{}{-}} \FunctionTok{generate.SIR.data}\NormalTok{(}\AttributeTok{total.N     =}\NormalTok{ bristol.N,}
+                                     \AttributeTok{initial.inf =} \DecValTok{10}\NormalTok{,}
+                                     \AttributeTok{total.T     =} \DecValTok{150}\NormalTok{)}
+
+\NormalTok{UK.example }\OtherTok{\textless{}{-}} \FunctionTok{generate.SIR.data}\NormalTok{(}\AttributeTok{total.N     =}\NormalTok{ UK.N,}
+                                \AttributeTok{initial.inf =} \DecValTok{10}\NormalTok{,}
+                                \AttributeTok{total.T     =} \DecValTok{150}\NormalTok{)}
+
+\NormalTok{bristol.uni.example }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{head}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}rrrrrrr@{}}
+\toprule()
+t & S.t & I.t & R.t & N & b & k \\
+\midrule()
+\endhead
+1 & 29434 & 10 & 0 & 29434 & 0.6378667 & 0.3453372 \\
+2 & 29427 & 12 & 3 & 29434 & 0.6378667 & 0.3453372 \\
+3 & 29419 & 15 & 7 & 29434 & 0.6378667 & 0.3453372 \\
+4 & 29409 & 19 & 12 & 29434 & 0.6378667 & 0.3453372 \\
+5 & 29396 & 24 & 18 & 29434 & 0.6378667 & 0.3453372 \\
+6 & 29380 & 31 & 26 & 29434 & 0.6378667 & 0.3453372 \\
+\bottomrule()
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# {-}{-}{-}{-}{-} Save Data {-}{-}{-}{-}{-}}
+
+\FunctionTok{write.csv}\NormalTok{( bristol.uni.example, }\AttributeTok{file =} \StringTok{"data/bristol\_uni\_example.csv"}\NormalTok{, }\AttributeTok{row.names =} \ConstantTok{FALSE}\NormalTok{ )}
+\FunctionTok{write.csv}\NormalTok{( bristol.example,     }\AttributeTok{file =} \StringTok{"data/bristol\_example.csv"}\NormalTok{, }\AttributeTok{row.names =} \ConstantTok{FALSE}\NormalTok{ )}
+\FunctionTok{write.csv}\NormalTok{( UK.example,          }\AttributeTok{file =} \StringTok{"data/UK\_example.csv"}\NormalTok{, }\AttributeTok{row.names =} \ConstantTok{FALSE}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
+
 \hypertarget{parallelisation}{%
 \subsection{Parallelisation}\label{parallelisation}}
 
@@ -93,7 +203,92 @@
 \hypertarget{implementing-abc}{%
 \section{Implementing ABC}\label{implementing-abc}}
 
-\hypertarget{checking-the-results}{%
-\section{Checking the results}\label{checking-the-results}}
+\hypertarget{checking-results}{%
+\section{Checking Results}\label{checking-results}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# {-}{-}{-}{-}{-} Read Results Data from CSV {-}{-}{-}{-}{-}}
+
+\NormalTok{bristol.uni.example }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"data/bristol\_uni\_example.csv"}\NormalTok{, }\AttributeTok{header =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{bristol.example     }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"data/bristol\_example.csv"}\NormalTok{, }\AttributeTok{header =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{UK.example          }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"data/UK\_example.csv"}\NormalTok{, }\AttributeTok{header =} \ConstantTok{TRUE}\NormalTok{)}
+
+
+
+\CommentTok{\# {-}{-}{-}{-}{-} Plot Results {-}{-}{-}{-}{-}}
+
+\NormalTok{legend.colors }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Susceptible"} \OtherTok{=} \StringTok{"red"}\NormalTok{, }\StringTok{"Infected"} \OtherTok{=} \StringTok{"blue"}\NormalTok{, }\StringTok{"Recovered"} \OtherTok{=} \StringTok{"green"}\NormalTok{)}
+
+\NormalTok{bristol.uni.plot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(bristol.uni.example, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ t)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y  =}\NormalTok{ S.t, }\AttributeTok{color =} \StringTok{"Susceptible"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y  =}\NormalTok{ I.t, }\AttributeTok{color =} \StringTok{"Infected"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y  =}\NormalTok{ R.t, }\AttributeTok{color =} \StringTok{"Recovered"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{color =} \StringTok{"Legend"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values =}\NormalTok{ legend.colors) }\SpecialCharTok{+}
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"SIR Model {-} Bristol Uni Example"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{xlab}\NormalTok{(}\StringTok{"Time"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{ylab}\NormalTok{(}\StringTok{"SIR Populations"}\NormalTok{)}
+
+\NormalTok{bristol.plot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(bristol.example, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ t)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y  =}\NormalTok{ S.t, }\AttributeTok{color =} \StringTok{"Susceptible"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y  =}\NormalTok{ I.t, }\AttributeTok{color =} \StringTok{"Infected"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y  =}\NormalTok{ R.t, }\AttributeTok{color =} \StringTok{"Recovered"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{color =} \StringTok{"Legend"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values =}\NormalTok{ legend.colors) }\SpecialCharTok{+}
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"SIR Model {-} Bristol City Example"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{xlab}\NormalTok{(}\StringTok{"Time"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{ylab}\NormalTok{(}\StringTok{"SIR Populations"}\NormalTok{)}
+
+\NormalTok{UK.plot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(UK.example, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ t)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y  =}\NormalTok{ S.t, }\AttributeTok{color =} \StringTok{"Susceptible"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y  =}\NormalTok{ I.t, }\AttributeTok{color =} \StringTok{"Infected"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y  =}\NormalTok{ R.t, }\AttributeTok{color =} \StringTok{"Recovered"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{color =} \StringTok{"Legend"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values =}\NormalTok{ legend.colors) }\SpecialCharTok{+}
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"SIR Model {-} UK Example"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{xlab}\NormalTok{(}\StringTok{"Time"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{ylab}\NormalTok{(}\StringTok{"SIR Populations"}\NormalTok{)}
+
+
+
+\CommentTok{\# {-}{-}{-}{-}{-} Save Plots {-}{-}{-}{-}{-}}
+
+\FunctionTok{png}\NormalTok{(}\StringTok{"plots/bristol\_uni\_plot.png"}\NormalTok{)}
+\NormalTok{bristol.uni.plot}
+\FunctionTok{dev.off}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## pdf 
+##   2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{png}\NormalTok{(}\StringTok{"plots/bristol\_plot.png"}\NormalTok{)}
+\NormalTok{bristol.plot}
+\FunctionTok{dev.off}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## pdf 
+##   2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{png}\NormalTok{(}\StringTok{"plots/UK\_plot.png"}\NormalTok{)}
+\NormalTok{UK.plot}
+\FunctionTok{dev.off}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## pdf 
+##   2
+\end{verbatim}
 
 \end{document}
