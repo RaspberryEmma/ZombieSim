@@ -23,72 +23,88 @@ suppressPackageStartupMessages({
 
 
 
-# ----- Synthetic Data Generation -----
-
-generate.start.cond <- function(total.N = NULL, initial.inf = NULL) {
+generate.start.cond <- function(N = NULL, initial.inf = NULL, beta =  2/(N), kappa = 3/(N), rho = 1/N){
   # central model parameters
-  b <- rnorm(n = 1, mean = 0.6, sd = 0.05) # contact rate, the "R statistic" (R_0)
-  k <- rnorm(n = 1, mean = 0.4, sd = 0.03) # recovery rate
+  #beta <- rnorm(n = 1, mean = 2/(N), sd = 1/(10 * N^2)) # contact rate, the "R statistic" (R_0)
+  #kappa <- rnorm(n = 1, mean = 3/(N), sd = 1/(10 * N^2)) # kill rate
+  #rho <- rnorm(n=1, mean =1/(N), sd =1/(10 * N^2))   # resurrection rate
   
   # initial population values
-  S.0 <- as.integer( total.N )     # initial susceptible population total (large)
-  I.0 <- as.integer( initial.inf ) # initial infected population total (small)
-  R.0 <- as.integer( 0 )           # initial recovered population total (zero)
+  Z.0 <- as.integer( initial.inf )      # initial infected population total (small)
+  S.0 <- as.integer( N - Z.0)     # initial susceptible population total (large)
+  R.0 <- as.integer( 0 )                # initial recovered population total (zero)
   
-  cond <- c(S.0, I.0, R.0, total.N, b, k)
+  return.val <- list(
+    populations = c(S.0, Z.0, R.0),
+    N = N,
+    beta = beta,
+    kappa = kappa,
+    rho = rho
+  )
   
-  return (cond)
+  return (return.val)
 }
 
 
-change.s <- function(b, s, i) {
-  return ((-1 * b * s * i))
+infected <- function(beta, s, z) {
+  return(as.integer(s*(min(c(beta *z, 1)))))
 }
 
-change.i <- function(b, k, s, i) {
-  return ( ( (b * s * i) + (-1 * k * i) ))
+killed <- function(kappa,s, z) {
+  return(as.integer(z*(min(kappa *s, 1))))
 }
 
-change.r <-function(k, i) {
-  return ((k * i))
+resurrected <-function(rho, r) {
+  return ((as.integer(rho*r)))
 }
 
 
-generate.SIR.data <- function(total.N = NULL, initial.inf = NULL, total.T = NULL) {
+generate.SZR.data <- function(N = NULL, initial.inf = NULL, total.T = NULL) {
   
   # initial model conditions
-  cond <- generate.start.cond(total.N = total.N, initial.inf = initial.inf)
+  cond <- generate.start.cond(N = N, initial.inf = initial.inf)
   
   # constant model parameters
-  N    <- total.N
-  b    <- cond[5]
-  k    <- cond[6]
+  N       <- cond$N
+  beta    <- cond$beta
+  kappa   <- cond$kappa
+  rho     <- cond$rho
+  
   
   # results array to hold values of each function at times 1 to total.T
-  results <- array(data = NA, dim = c(total.T, length(cond)+1) )
-  results[1, ] <- c(1, cond)
+  results <- array(data = NA, dim = c(total.T, length(cond$populations)+1) )
+  results[1, ] <- c(1, cond$populations)
   
   # vector to hold current sim values
-  values.t <- NULL
+  values.t <- c(1, cond$populations)
   
   # run through SIR simulation for times 2 to total.T
-  # results vector indices 1=S, 2=I, 3=R
+  # results vector indices 1=S, 2=Z, 3=R
   for (t in 2:total.T) {
-    S.t <- as.integer( results[t-1, 2] + N*change.s(b,    results[t-1, 2]/N, results[t-1, 3]/N) )
+    infected.t    <- infected(   beta,  values.t[2], values.t[3])
+    killed.t      <- killed(     kappa, values.t[2], values.t[3])
+    resurrected.t <- resurrected(rho,   values.t[4])
     
-    I.t <- as.integer( results[t-1, 3] + N*change.i(b, k, results[t-1, 2]/N, results[t-1, 3]/N) )
+    S <- values.t[2] - infected.t
+    Z <- values.t[3] + infected.t - killed.t + resurrected.t
+    R <- values.t[4] + killed.t - resurrected.t
     
-    R.t <- as.integer( results[t-1, 4] + N*change.r(k,    results[t-1, 3]/N) )
-    
-    values.t     <- c(t, S.t, I.t, R.t, N, b, k)
+    values.t     <- c(t, S, Z, R)
     results[t, ] <- values.t
   }
   
   # convert to data.frame to explicitly record column meaning
   results           <- as.data.frame(results)
-  colnames(results) <- c("t", "S.t", "I.t", "R.t", "N", "b", "k")
+  colnames(results) <- c("t", "S.t", "Z.t", "R.t")
   
-  return ( results )
+  return.val <- list(
+    results = results,
+    N = N,
+    beta = beta,
+    kappa = kappa,
+    rho = rho
+  )
+  return (return.val)
 }
 
 

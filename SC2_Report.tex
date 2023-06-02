@@ -101,6 +101,9 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{tikz}
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
@@ -175,12 +178,12 @@
 t & S.t & I.t & R.t & N & b & k \\
 \midrule()
 \endhead
-1 & 29434 & 10 & 0 & 29434 & 0.6378667 & 0.3453372 \\
-2 & 29427 & 12 & 3 & 29434 & 0.6378667 & 0.3453372 \\
-3 & 29419 & 15 & 7 & 29434 & 0.6378667 & 0.3453372 \\
-4 & 29409 & 19 & 12 & 29434 & 0.6378667 & 0.3453372 \\
-5 & 29396 & 24 & 18 & 29434 & 0.6378667 & 0.3453372 \\
-6 & 29380 & 31 & 26 & 29434 & 0.6378667 & 0.3453372 \\
+1 & 29434 & 10 & 0 & 29434 & 0.6323166 & 0.3918715 \\
+2 & 29427 & 12 & 3 & 29434 & 0.6323166 & 0.3918715 \\
+3 & 29419 & 14 & 7 & 29434 & 0.6323166 & 0.3918715 \\
+4 & 29410 & 17 & 12 & 29434 & 0.6323166 & 0.3918715 \\
+5 & 29399 & 21 & 18 & 29434 & 0.6323166 & 0.3918715 \\
+6 & 29385 & 26 & 26 & 29434 & 0.6323166 & 0.3918715 \\
 \bottomrule()
 \end{longtable}
 
@@ -197,8 +200,55 @@ t & S.t & I.t & R.t & N & b & k \\
 \hypertarget{parallelisation}{%
 \subsection{Parallelisation}\label{parallelisation}}
 
-\hypertarget{simulating-an-epidemic}{%
-\section{Simulating an Epidemic}\label{simulating-an-epidemic}}
+\hypertarget{generating-szr-data}{%
+\section{Generating SZR data}\label{generating-szr-data}}
+
+We simulate the zombie epidemic using the \texttt{generate.SIR.data()}
+function, which is given by the code below. For ease, this function has
+also been included in our \texttt{intractmodelinf} package
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{generate.SIR.data }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(}\AttributeTok{total.N =} \ConstantTok{NULL}\NormalTok{, }\AttributeTok{initial.inf =} \ConstantTok{NULL}\NormalTok{, }\AttributeTok{total.T =} \ConstantTok{NULL}\NormalTok{) \{}
+  
+  \CommentTok{\# initial model conditions}
+\NormalTok{  cond }\OtherTok{\textless{}{-}} \FunctionTok{generate.start.cond}\NormalTok{(}\AttributeTok{total.N =}\NormalTok{ total.N, }\AttributeTok{initial.inf =}\NormalTok{ initial.inf)}
+  
+  \CommentTok{\# constant model parameters}
+\NormalTok{  N    }\OtherTok{\textless{}{-}}\NormalTok{ total.N}
+\NormalTok{  b    }\OtherTok{\textless{}{-}}\NormalTok{ cond[}\DecValTok{5}\NormalTok{]}
+\NormalTok{  k    }\OtherTok{\textless{}{-}}\NormalTok{ cond[}\DecValTok{6}\NormalTok{]}
+  
+  \CommentTok{\# results array to hold values of each function at times 1 to total.T}
+\NormalTok{  results }\OtherTok{\textless{}{-}} \FunctionTok{array}\NormalTok{(}\AttributeTok{data =} \ConstantTok{NA}\NormalTok{, }\AttributeTok{dim =} \FunctionTok{c}\NormalTok{(total.T, }\FunctionTok{length}\NormalTok{(cond)}\SpecialCharTok{+}\DecValTok{1}\NormalTok{) )}
+\NormalTok{  results[}\DecValTok{1}\NormalTok{, ] }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, cond)}
+  
+  \CommentTok{\# vector to hold current sim values}
+\NormalTok{  values.t }\OtherTok{\textless{}{-}} \ConstantTok{NULL}
+  
+  \CommentTok{\# run through SIR simulation for times 2 to total.T}
+  \CommentTok{\# results vector indices 1=S, 2=I, 3=R}
+  \ControlFlowTok{for}\NormalTok{ (t }\ControlFlowTok{in} \DecValTok{2}\SpecialCharTok{:}\NormalTok{total.T) \{}
+\NormalTok{    S.t }\OtherTok{\textless{}{-}} \FunctionTok{as.integer}\NormalTok{( results[t}\DecValTok{{-}1}\NormalTok{, }\DecValTok{2}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ N}\SpecialCharTok{*}\FunctionTok{change.s}\NormalTok{(b,    results[t}\DecValTok{{-}1}\NormalTok{, }\DecValTok{2}\NormalTok{]}\SpecialCharTok{/}\NormalTok{N, results[t}\DecValTok{{-}1}\NormalTok{, }\DecValTok{3}\NormalTok{]}\SpecialCharTok{/}\NormalTok{N) )}
+    
+\NormalTok{    I.t }\OtherTok{\textless{}{-}} \FunctionTok{as.integer}\NormalTok{( results[t}\DecValTok{{-}1}\NormalTok{, }\DecValTok{3}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ N}\SpecialCharTok{*}\FunctionTok{change.i}\NormalTok{(b, k, results[t}\DecValTok{{-}1}\NormalTok{, }\DecValTok{2}\NormalTok{]}\SpecialCharTok{/}\NormalTok{N, results[t}\DecValTok{{-}1}\NormalTok{, }\DecValTok{3}\NormalTok{]}\SpecialCharTok{/}\NormalTok{N) )}
+    
+\NormalTok{    R.t }\OtherTok{\textless{}{-}} \FunctionTok{as.integer}\NormalTok{( results[t}\DecValTok{{-}1}\NormalTok{, }\DecValTok{4}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ N}\SpecialCharTok{*}\FunctionTok{change.r}\NormalTok{(k,    results[t}\DecValTok{{-}1}\NormalTok{, }\DecValTok{3}\NormalTok{]}\SpecialCharTok{/}\NormalTok{N) )}
+    
+\NormalTok{    values.t     }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(t, S.t, I.t, R.t, N, b, k)}
+\NormalTok{    results[t, ] }\OtherTok{\textless{}{-}}\NormalTok{ values.t}
+\NormalTok{  \}}
+  
+  \CommentTok{\# convert to data.frame to explicitly record column meaning}
+\NormalTok{  results           }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(results)}
+  \FunctionTok{colnames}\NormalTok{(results) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"t"}\NormalTok{, }\StringTok{"S.t"}\NormalTok{, }\StringTok{"I.t"}\NormalTok{, }\StringTok{"R.t"}\NormalTok{, }\StringTok{"N"}\NormalTok{, }\StringTok{"b"}\NormalTok{, }\StringTok{"k"}\NormalTok{)}
+  
+  \FunctionTok{return}\NormalTok{ ( results )}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+We use this to simulate an outbreak for 3 diff
 
 \hypertarget{implementing-abc}{%
 \section{Implementing ABC}\label{implementing-abc}}
@@ -208,87 +258,15 @@ t & S.t & I.t & R.t & N & b & k \\
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# {-}{-}{-}{-}{-} Read Results Data from CSV {-}{-}{-}{-}{-}}
-
 \NormalTok{bristol.uni.example }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"data/bristol\_uni\_example.csv"}\NormalTok{, }\AttributeTok{header =} \ConstantTok{TRUE}\NormalTok{)}
 \NormalTok{bristol.example     }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"data/bristol\_example.csv"}\NormalTok{, }\AttributeTok{header =} \ConstantTok{TRUE}\NormalTok{)}
 \NormalTok{UK.example          }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"data/UK\_example.csv"}\NormalTok{, }\AttributeTok{header =} \ConstantTok{TRUE}\NormalTok{)}
 
-
-
-\CommentTok{\# {-}{-}{-}{-}{-} Plot Results {-}{-}{-}{-}{-}}
-
 \NormalTok{legend.colors }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Susceptible"} \OtherTok{=} \StringTok{"red"}\NormalTok{, }\StringTok{"Infected"} \OtherTok{=} \StringTok{"blue"}\NormalTok{, }\StringTok{"Recovered"} \OtherTok{=} \StringTok{"green"}\NormalTok{)}
 
-\NormalTok{bristol.uni.plot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(bristol.uni.example, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ t)) }\SpecialCharTok{+}
-  \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y  =}\NormalTok{ S.t, }\AttributeTok{color =} \StringTok{"Susceptible"}\NormalTok{)) }\SpecialCharTok{+}
-  \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y  =}\NormalTok{ I.t, }\AttributeTok{color =} \StringTok{"Infected"}\NormalTok{)) }\SpecialCharTok{+}
-  \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y  =}\NormalTok{ R.t, }\AttributeTok{color =} \StringTok{"Recovered"}\NormalTok{)) }\SpecialCharTok{+}
-  \FunctionTok{labs}\NormalTok{(}\AttributeTok{color =} \StringTok{"Legend"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values =}\NormalTok{ legend.colors) }\SpecialCharTok{+}
-  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"SIR Model {-} Bristol Uni Example"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{xlab}\NormalTok{(}\StringTok{"Time"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{ylab}\NormalTok{(}\StringTok{"SIR Populations"}\NormalTok{)}
-
-\NormalTok{bristol.plot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(bristol.example, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ t)) }\SpecialCharTok{+}
-  \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y  =}\NormalTok{ S.t, }\AttributeTok{color =} \StringTok{"Susceptible"}\NormalTok{)) }\SpecialCharTok{+}
-  \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y  =}\NormalTok{ I.t, }\AttributeTok{color =} \StringTok{"Infected"}\NormalTok{)) }\SpecialCharTok{+}
-  \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y  =}\NormalTok{ R.t, }\AttributeTok{color =} \StringTok{"Recovered"}\NormalTok{)) }\SpecialCharTok{+}
-  \FunctionTok{labs}\NormalTok{(}\AttributeTok{color =} \StringTok{"Legend"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values =}\NormalTok{ legend.colors) }\SpecialCharTok{+}
-  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"SIR Model {-} Bristol City Example"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{xlab}\NormalTok{(}\StringTok{"Time"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{ylab}\NormalTok{(}\StringTok{"SIR Populations"}\NormalTok{)}
-
-\NormalTok{UK.plot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(UK.example, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ t)) }\SpecialCharTok{+}
-  \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y  =}\NormalTok{ S.t, }\AttributeTok{color =} \StringTok{"Susceptible"}\NormalTok{)) }\SpecialCharTok{+}
-  \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y  =}\NormalTok{ I.t, }\AttributeTok{color =} \StringTok{"Infected"}\NormalTok{)) }\SpecialCharTok{+}
-  \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y  =}\NormalTok{ R.t, }\AttributeTok{color =} \StringTok{"Recovered"}\NormalTok{)) }\SpecialCharTok{+}
-  \FunctionTok{labs}\NormalTok{(}\AttributeTok{color =} \StringTok{"Legend"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values =}\NormalTok{ legend.colors) }\SpecialCharTok{+}
-  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"SIR Model {-} UK Example"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{xlab}\NormalTok{(}\StringTok{"Time"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{ylab}\NormalTok{(}\StringTok{"SIR Populations"}\NormalTok{)}
-
-
-
-\CommentTok{\# {-}{-}{-}{-}{-} Save Plots {-}{-}{-}{-}{-}}
-
-\FunctionTok{png}\NormalTok{(}\StringTok{"plots/bristol\_uni\_plot.png"}\NormalTok{)}
-\NormalTok{bristol.uni.plot}
-\FunctionTok{dev.off}\NormalTok{()}
+\FunctionTok{plot.SIR}\NormalTok{(bristol.uni.example)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## pdf 
-##   2
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{png}\NormalTok{(}\StringTok{"plots/bristol\_plot.png"}\NormalTok{)}
-\NormalTok{bristol.plot}
-\FunctionTok{dev.off}\NormalTok{()}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## pdf 
-##   2
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{png}\NormalTok{(}\StringTok{"plots/UK\_plot.png"}\NormalTok{)}
-\NormalTok{UK.plot}
-\FunctionTok{dev.off}\NormalTok{()}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## pdf 
-##   2
-\end{verbatim}
 
 \end{document}
