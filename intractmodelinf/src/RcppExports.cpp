@@ -85,9 +85,10 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// run_abc
-arma::mat run_abc(const arma::mat& observedData, const int numParticles, const int numIters, const double epsilon);
-RcppExport SEXP _intractmodelinf_run_abc(SEXP observedDataSEXP, SEXP numParticlesSEXP, SEXP numItersSEXP, SEXP epsilonSEXP) {
+
+// abc
+arma::mat abc(const arma::mat& observedData, const int numParticles, const int numIters, const double epsilon);
+RcppExport SEXP _intractmodelinf_abc(SEXP observedDataSEXP, SEXP numParticlesSEXP, SEXP numItersSEXP, SEXP epsilonSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -95,7 +96,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const int >::type numParticles(numParticlesSEXP);
     Rcpp::traits::input_parameter< const int >::type numIters(numItersSEXP);
     Rcpp::traits::input_parameter< const double >::type epsilon(epsilonSEXP);
-    rcpp_result_gen = Rcpp::wrap(run_abc(observedData, numParticles, numIters, epsilon));
+    rcpp_result_gen = Rcpp::wrap(abc(observedData, numParticles, numIters, epsilon));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -107,7 +108,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_intractmodelinf_calculateDistance", (DL_FUNC) &_intractmodelinf_calculateDistance, 2},
     {"_intractmodelinf_acceptRejectAndUpdate", (DL_FUNC) &_intractmodelinf_acceptRejectAndUpdate, 3},
     {"_intractmodelinf_estimatePosterior", (DL_FUNC) &_intractmodelinf_estimatePosterior, 2},
-    {"_intractmodelinf_run_abc", (DL_FUNC) &_intractmodelinf_run_abc, 4},
+    {"_intractmodelinf_abc", (DL_FUNC) &_intractmodelinf_abc, 4},
     {NULL, NULL, 0}
 };
 
