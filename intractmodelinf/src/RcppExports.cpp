@@ -85,6 +85,7 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+
 // abc
 arma::mat abc(const arma::mat& observedData, const int numParticles, const int numIters, const double epsilon);
 RcppExport SEXP _intractmodelinf_abc(SEXP observedDataSEXP, SEXP numParticlesSEXP, SEXP numItersSEXP, SEXP epsilonSEXP) {
