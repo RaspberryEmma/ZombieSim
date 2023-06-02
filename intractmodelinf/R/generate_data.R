@@ -23,6 +23,22 @@ suppressPackageStartupMessages({
 
 
 
+#' Gives a list of starting conditions of the model
+#'
+#' @param N Size of total population to model
+#' @param initial.inf Number of infected people in the first time point
+#' @param beta The bite rate 
+#' @param kappa The kill rate
+#' @param rho The resurrection rate
+#'
+#' @return a list with elements
+#' - `populations` A vector with elements showing the counts of the initial susceptible, zombie and removed populations
+#' - `N` The total population size
+#' - `beta` The beta supplied as input, , otherwise defaults to 2/N
+#' - `kappa` The kappa supplied as input, otherwise defaults to 3/N
+#' - `rho` The rho supplied as input, otherwise defaults to 1/N
+#' @export
+
 generate.start.cond <- function(N = NULL, initial.inf = NULL, beta =  2/(N), kappa = 3/(N), rho = 1/N){
   # central model parameters
   #beta <- rnorm(n = 1, mean = 2/(N), sd = 1/(10 * N^2)) # contact rate, the "R statistic" (R_0)
@@ -59,6 +75,21 @@ resurrected <-function(rho, r) {
 }
 
 
+#' Gives simulated data for a deterministic SZR model
+#'
+#' @param N The total population 
+#' @param initial.inf The number of infected individuals at time point 1
+#' @param total.T The number of time points to simulate
+#'
+#' @return A list with elements
+#' - `results` A data frame with `total.T` rows and 4 columns showing the population counts for each time point
+#' - `N` The total population, as input
+#' - `beta` The true bite rate
+#' - `kappa` The true kill rate
+#' - `rho` The true resurrection rate
+#' @export
+#'
+#' @examples
 generate.SZR.data <- function(N = NULL, initial.inf = NULL, total.T = NULL) {
   
   # initial model conditions
@@ -67,7 +98,7 @@ generate.SZR.data <- function(N = NULL, initial.inf = NULL, total.T = NULL) {
   # constant model parameters
   N       <- cond$N
   beta    <- cond$beta
-  kappa   <- cond$kappa
+  kappa   <- cond$kappaS
   rho     <- cond$rho
   
   
