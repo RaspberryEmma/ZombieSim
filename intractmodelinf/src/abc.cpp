@@ -267,7 +267,7 @@ arma::mat estimatePosterior(const arma::mat& acceptedSamples, const arma::vec& w
 //' @return posteriorSamples Generated posterior parameter samples (e.g., as an Armadillo matrix)
 //' @export
 // [[Rcpp::export]]
-arma::mat run_abc(const arma::mat& observedData, const int numParticles, const int numIters, const double epsilon = 0.1){
+arma::mat abc(const arma::mat& observedData, const int numParticles, const int numIters, const double epsilon = 0.1){
   // Check the dimensions of the observed data
   if (observedData.n_cols != 3) {
     Rcpp::stop("The observed data must have three columns.");
