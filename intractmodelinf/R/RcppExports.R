@@ -67,6 +67,7 @@ estimatePosterior <- function(acceptedSamples, weights) {
 
 #' ABC function
 #'
+#' @name abc
 #' @param observedData Observed data (e.g., as an Armadillo matrix or vector)
 #' @param numParticles Number of particles/samples to generate
 #' @param numIters Number of iterations
@@ -74,7 +75,6 @@ estimatePosterior <- function(acceptedSamples, weights) {
 #'
 #' @return posteriorSamples Generated posterior parameter samples (e.g., as an Armadillo matrix)
 #' @export
-
 abc <- function(observedData, numParticles, numIters, epsilon = 0.1) {
     .Call(`_intractmodelinf_abc`, observedData, numParticles, numIters, epsilon)
 }

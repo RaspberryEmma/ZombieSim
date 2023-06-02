@@ -30,7 +30,7 @@
 # ----- Simulation Functions -----
 
 #SIR.model <- function(start.cond  = NULL,
-                      approx.func = NULL) {
+ #                     approx.func = NULL) {
   # build SIR model with starting conditions specified
   
   # run model through to end-point

@@ -88,8 +88,7 @@ resurrected <-function(rho, r) {
 #' - `kappa` The true kill rate
 #' - `rho` The true resurrection rate
 #' @export
-#'
-#' @examples
+
 generate.SZR.data <- function(N = NULL, initial.inf = NULL, total.T = NULL) {
   
   # initial model conditions
