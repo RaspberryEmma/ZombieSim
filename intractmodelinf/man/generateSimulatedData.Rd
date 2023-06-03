@@ -3,15 +3,12 @@
 \name{generateSimulatedData}
 \alias{generateSimulatedData}
 \title{Function to generate simulated data from the zombie outbreak model}
-\usage{
-generateSimulatedData(parameters, numTimePoints)
-}
 \arguments{
 \item{parameters}{A matrix of parameter values (each row represents a set of parameter values)}
 
-\item{numTimePoints}{Number of time points to simulate}
-
 \item{numParticles}{Number of data samples to generate}
+
+\item{numTimePoints}{Number of time points to simulate}
 }
 \value{
 A 3D array of simulated data with dimensions (numParticles, numTimePoints, 3). The third dimension represents the populations: 1 - Susceptible, 2 - Zombie, 3 - Removed

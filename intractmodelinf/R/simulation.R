@@ -24,7 +24,6 @@ suppressPackageStartupMessages({
 })
 
 source("R/generate_data.R")
-abc <- Rcpp::sourceCpp("src/abc.cpp")
 
 
 # ----- Simulation Functions -----

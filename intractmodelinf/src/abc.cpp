@@ -8,12 +8,14 @@ using namespace Rcpp;
 
 //' Generate parameter samples from the prior
 //'
+//' @name generateParameterSamples
 //' @param num_Params Number of parameters
 //' @param numParticles Number of parameter samples to generate
 //' @param priorMin Lower bound of the prior distribution
 //' @param priorMax Upper bound of the prior distribution
 //'
 //' @return  parameterSamples Generated parameter samples as an Armadillo matrix
+//' @export
 // [[Rcpp::export]]
 arma::mat generateParameterSamples(int numParticles, int numParams, arma::vec priorMin, arma::vec priorMax) {
   // Check if the number of parameters is greater than zero
@@ -46,11 +48,13 @@ arma::mat generateParameterSamples(int numParticles, int numParams, arma::vec pr
 
 //' Function to generate simulated data from the zombie outbreak model
 //'
+//' @name generateSimulatedData
 //' @param parameters A matrix of parameter values (each row represents a set of parameter values)
 //' @param numParticles Number of data samples to generate
 //' @param numTimePoints Number of time points to simulate
 //'
 //' @return  A 3D array of simulated data with dimensions (numParticles, numTimePoints, 3). The third dimension represents the populations: 1 - Susceptible, 2 - Zombie, 3 - Removed
+//' @export
 // [[Rcpp::export]]
 arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints) {
   int numParticles = parameters.n_rows; // Number of parameter samples
@@ -110,9 +114,11 @@ arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints)
 
 //' Function to compute summary statistics for simulated data from the zombie outbreak model
 //'
+//' @name computeSummaryStatistics
 //' @param simulatedData A 3D array of simulated data with dimensions (numParticles, numTimePoints, numPopStats)
 //'
 //' @return A matrix of summary statistics with dimensions (numParticles, numStats). Each row represents the summary statistics for a particular particle. The number of columns (numStats) depends on the selected summary statistics
+//' @export
 // [[Rcpp::export]]
 arma::mat computeSummaryStatistics(const arma::cube& simulatedData) {
   int numStats = 9; // Number of summary statistics
@@ -151,10 +157,12 @@ arma::mat computeSummaryStatistics(const arma::cube& simulatedData) {
 
 //' Function to calculate the euclidean distance between observed and simulated data
 //'
+//' @name calculateDistance
 //' @param observedData Matrix of observed data (each row represents a time point)
 //' @param simulatedData Cube of simulated data (each second dimension represents a simulated data point)
 //'
 //' @return distances Vector of distances between observed and simulated data points
+//' @export
 // [[Rcpp::export]]
 arma::mat calculateDistance(const arma::mat& observedData, const arma::cube& simulatedData) {
   // Get the number of time points
@@ -184,12 +192,14 @@ arma::mat calculateDistance(const arma::mat& observedData, const arma::cube& sim
 
 //' Perform acceptance/rejection of parameter samples and update with weights
 //'
+//' @name acceptRejectAndUpdate
 //' @param parameterSamples Matrix of parameter samples (each row represents a set of parameter values)
 //' @param observedData Matrix of observed data (each row represents an observed data point)
 //' @param tolerance Tolerance threshold for accepting parameter samples
 //'
 //' @return  acceptedSamples Matrix of accepted parameter samples
 //' @return weights Vector of weights assigned to accepted parameter samples
+//' @export
 // [[Rcpp::export]]
 Rcpp::List acceptRejectAndUpdate(const arma::mat& parameterSamples, const arma::mat& distances, double tolerance) {
   // Get the number of parameter samples and data points
@@ -227,10 +237,12 @@ Rcpp::List acceptRejectAndUpdate(const arma::mat& parameterSamples, const arma::
 
 //' Estimate the posterior distribution based on accepted parameter samples and weights
 //'
+//' @name estimatePosterior
 //' @param acceptedSamples Matrix of accepted parameter samples (each row represents a set of accepted parameter values)
 //' @param weights Vector of weights assigned to accepted parameter samples
 //'
 //' @return posteriorSamples Matrix of posterior parameter samples
+//' @export
 // [[Rcpp::export]]
 arma::mat estimatePosterior(const arma::mat& acceptedSamples, const arma::vec& weights) {
   // Get the number of accepted samples and parameters
@@ -259,6 +271,7 @@ arma::mat estimatePosterior(const arma::mat& acceptedSamples, const arma::vec& w
 
 //' ABC function
 //'
+//' @name abc
 //' @param observedData Observed data (e.g., as an Armadillo matrix or vector)
 //' @param numParticles Number of particles/samples to generate
 //' @param numIters Number of iterations

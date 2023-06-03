@@ -3,17 +3,14 @@
 \name{generateParameterSamples}
 \alias{generateParameterSamples}
 \title{Generate parameter samples from the prior}
-\usage{
-generateParameterSamples(numParticles, numParams, priorMin, priorMax)
-}
 \arguments{
+\item{num_Params}{Number of parameters}
+
 \item{numParticles}{Number of parameter samples to generate}
 
 \item{priorMin}{Lower bound of the prior distribution}
 
 \item{priorMax}{Upper bound of the prior distribution}
-
-\item{num_Params}{Number of parameters}
 }
 \value{
 parameterSamples Generated parameter samples as an Armadillo matrix
