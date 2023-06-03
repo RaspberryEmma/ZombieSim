@@ -4,7 +4,7 @@
 \alias{generateParameterSamples}
 \title{Generate parameter samples from the prior}
 \usage{
-generateParameterSamples(numParams, numParticles, priorMin, priorMax)
+generateParameterSamples(numParticles, numParams, priorMin, priorMax)
 }
 \arguments{
 \item{numParticles}{Number of parameter samples to generate}
