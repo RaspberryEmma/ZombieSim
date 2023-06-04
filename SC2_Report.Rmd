@@ -119,6 +119,9 @@ source(file = "intractmodelinf/R/plots.R")
 
 plot.SZR(new.example$results)
 ```
+```{r}
+
+```
 
 
 ```{r}
