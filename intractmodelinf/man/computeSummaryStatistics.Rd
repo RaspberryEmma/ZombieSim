@@ -3,9 +3,6 @@
 \name{computeSummaryStatistics}
 \alias{computeSummaryStatistics}
 \title{Function to compute summary statistics for simulated data from the zombie outbreak model}
-\usage{
-computeSummaryStatistics(simulatedData)
-}
 \arguments{
 \item{simulatedData}{A 3D array of simulated data with dimensions (numParticles, numTimePoints, numPopStats)}
 }

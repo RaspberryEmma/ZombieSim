@@ -23,8 +23,9 @@
 #  library(tidyverse)
 #})
 
-#source("R/generate_data.R")
-#abc <- Rcpp::sourceCpp("src/abc.cpp")
+
+source("R/generate_data.R")
+
 
 
 # ----- Simulation Functions -----
@@ -57,7 +58,11 @@
 
 #for (i in 1:N) {
   # Generate synthetic data
+<<<<<<< HEAD
 #  current.data <- generate.start.cond(total.N = n)
+=======
+  current.data <- generate.start.cond(N = n)
+>>>>>>> 1ee1add5376312512196fc3edbb5ad120ca4481a
   
   # Run SIR model to obtain outcome
 #  current.outcomes <- SIR.model(start.cond  = current.data,
