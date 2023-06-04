@@ -3,9 +3,6 @@
 \name{estimatePosterior}
 \alias{estimatePosterior}
 \title{Estimate the posterior distribution based on accepted parameter samples and weights}
-\usage{
-estimatePosterior(acceptedSamples, weights)
-}
 \arguments{
 \item{acceptedSamples}{Matrix of accepted parameter samples (each row represents a set of accepted parameter values)}
 

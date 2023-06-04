@@ -3,66 +3,78 @@
 
 #' Generate parameter samples from the prior
 #'
+#' @name generateParameterSamples
 #' @param num_Params Number of parameters
 #' @param numParticles Number of parameter samples to generate
 #' @param priorMin Lower bound of the prior distribution
 #' @param priorMax Upper bound of the prior distribution
 #'
 #' @return  parameterSamples Generated parameter samples as an Armadillo matrix
+#' @export
 generateParameterSamples <- function(numParticles, numParams, priorMin, priorMax) {
-    .Call(`_intractmodelinf_generateParameterSamples`, numParticles, numParams, priorMin, priorMax)
+    .Call('_intractmodelinf_generateParameterSamples', PACKAGE = 'intractmodelinf', numParticles, numParams, priorMin, priorMax)
 }
 
 #' Function to generate simulated data from the zombie outbreak model
 #'
+#' @name generateSimulatedData
 #' @param parameters A matrix of parameter values (each row represents a set of parameter values)
 #' @param numParticles Number of data samples to generate
 #' @param numTimePoints Number of time points to simulate
 #'
 #' @return  A 3D array of simulated data with dimensions (numParticles, numTimePoints, 3). The third dimension represents the populations: 1 - Susceptible, 2 - Zombie, 3 - Removed
+#' @export
 generateSimulatedData <- function(parameters, numTimePoints) {
-    .Call(`_intractmodelinf_generateSimulatedData`, parameters, numTimePoints)
+    .Call('_intractmodelinf_generateSimulatedData', PACKAGE = 'intractmodelinf', parameters, numTimePoints)
 }
 
 #' Function to compute summary statistics for simulated data from the zombie outbreak model
 #'
+#' @name computeSummaryStatistics
 #' @param simulatedData A 3D array of simulated data with dimensions (numParticles, numTimePoints, numPopStats)
 #'
 #' @return A matrix of summary statistics with dimensions (numParticles, numStats). Each row represents the summary statistics for a particular particle. The number of columns (numStats) depends on the selected summary statistics
+#' @export
 computeSummaryStatistics <- function(simulatedData) {
-    .Call(`_intractmodelinf_computeSummaryStatistics`, simulatedData)
+    .Call('_intractmodelinf_computeSummaryStatistics', PACKAGE = 'intractmodelinf', simulatedData)
 }
 
 #' Function to calculate the euclidean distance between observed and simulated data
 #'
+#' @name calculateDistance
 #' @param observedData Matrix of observed data (each row represents a time point)
 #' @param simulatedData Cube of simulated data (each second dimension represents a simulated data point)
 #'
 #' @return distances Vector of distances between observed and simulated data points
+#' @export
 calculateDistance <- function(observedData, simulatedData) {
-    .Call(`_intractmodelinf_calculateDistance`, observedData, simulatedData)
+    .Call('_intractmodelinf_calculateDistance', PACKAGE = 'intractmodelinf', observedData, simulatedData)
 }
 
 #' Perform acceptance/rejection of parameter samples and update with weights
 #'
+#' @name acceptRejectAndUpdate
 #' @param parameterSamples Matrix of parameter samples (each row represents a set of parameter values)
 #' @param observedData Matrix of observed data (each row represents an observed data point)
 #' @param tolerance Tolerance threshold for accepting parameter samples
 #'
 #' @return  acceptedSamples Matrix of accepted parameter samples
 #' @return weights Vector of weights assigned to accepted parameter samples
+#' @export
 acceptRejectAndUpdate <- function(parameterSamples, distances, tolerance) {
-    .Call(`_intractmodelinf_acceptRejectAndUpdate`, parameterSamples, distances, tolerance)
+    .Call('_intractmodelinf_acceptRejectAndUpdate', PACKAGE = 'intractmodelinf', parameterSamples, distances, tolerance)
 }
 
 #' Estimate the posterior distribution based on accepted parameter samples and weights
 #'
+#' @name estimatePosterior
 #' @param acceptedSamples Matrix of accepted parameter samples (each row represents a set of accepted parameter values)
 #' @param weights Vector of weights assigned to accepted parameter samples
 #'
 #' @return posteriorSamples Matrix of posterior parameter samples
+#' @export
 estimatePosterior <- function(acceptedSamples, weights) {
-    .Call(`_intractmodelinf_estimatePosterior`, acceptedSamples, weights)
+    .Call('_intractmodelinf_estimatePosterior', PACKAGE = 'intractmodelinf', acceptedSamples, weights)
 }
 
 #' ABC function
@@ -75,6 +87,6 @@ estimatePosterior <- function(acceptedSamples, weights) {
 #' @return posteriorSamples Generated posterior parameter samples (e.g., as an Armadillo matrix)
 #' @export
 abc <- function(observedData, numParticles, numIters, epsilon = 0.1) {
-    .Call(`_intractmodelinf_abc`, observedData, numParticles, numIters, epsilon)
+    .Call('_intractmodelinf_abc', PACKAGE = 'intractmodelinf', observedData, numParticles, numIters, epsilon)
 }
 

@@ -1,8 +1,3 @@
-library(testthat)
-library(Rcpp)
-
-sourceCpp("abc.cpp")
-
 test_that("generateParameterSamples returns correct output", {
     # Positive test case
     ps <- generateParameterSamples(100, 3, c(-1.0, -1.0, -1.0), c(1.0, 1.0, 1.0))
