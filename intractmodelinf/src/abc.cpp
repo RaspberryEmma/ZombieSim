@@ -259,6 +259,7 @@ arma::mat estimatePosterior(const arma::mat& acceptedSamples, const arma::vec& w
 
 //' ABC function
 //'
+//' @name abc
 //' @param observedData Observed data (e.g., as an Armadillo matrix or vector)
 //' @param numParticles Number of particles/samples to generate
 //' @param numIters Number of iterations

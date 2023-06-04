@@ -4,7 +4,12 @@
 \alias{generate.SZR.data}
 \title{Gives simulated data for a deterministic SZR model}
 \usage{
-generate.SZR.data(N = NULL, initial.inf = NULL, total.T = NULL)
+generate.SZR.data(
+  N = NULL,
+  initial.inf = NULL,
+  total.T = NULL,
+  stochastic = TRUE
+)
 }
 \arguments{
 \item{N}{The total population}
