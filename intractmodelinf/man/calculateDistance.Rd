@@ -3,9 +3,6 @@
 \name{calculateDistance}
 \alias{calculateDistance}
 \title{Function to calculate the euclidean distance between observed and simulated data}
-\usage{
-calculateDistance(observedData, simulatedData)
-}
 \arguments{
 \item{observedData}{Matrix of observed data (each row represents a time point)}
 
