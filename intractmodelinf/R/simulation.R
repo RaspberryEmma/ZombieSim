@@ -24,7 +24,7 @@
 #})
 
 
-source("R/generate_data.R")
+#source("R/generate_data.R")
 
 
 
@@ -58,11 +58,11 @@ source("R/generate_data.R")
 
 #for (i in 1:N) {
   # Generate synthetic data
-<<<<<<< HEAD
+
 #  current.data <- generate.start.cond(total.N = n)
-=======
-  current.data <- generate.start.cond(N = n)
->>>>>>> 1ee1add5376312512196fc3edbb5ad120ca4481a
+
+#  current.data <- generate.start.cond(N = n)
+
   
   # Run SIR model to obtain outcome
 #  current.outcomes <- SIR.model(start.cond  = current.data,
