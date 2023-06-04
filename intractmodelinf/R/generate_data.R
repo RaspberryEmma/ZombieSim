@@ -62,18 +62,31 @@ generate.start.cond <- function(N = NULL, initial.inf = NULL, beta =  2/(N), kap
 }
 
 
-infected <- function(beta, s, z) {
+infected.det <- function(beta, s, z) {
   return(as.integer(s*(min(c(beta *z, 1)))))
 }
 
-killed <- function(kappa,s, z) {
+killed.det <- function(kappa,s, z) {
   return(as.integer(z*(min(kappa *s, 1))))
 }
 
-resurrected <-function(rho, r) {
+resurrected.det <-function(rho, r) {
   return ((as.integer(rho*r)))
 }
 
+infected.stoch <- function(beta,s, z){
+  prob <- min(c(beta *z, 1))
+  return(rbinom(1, s, prob))
+}
+
+killed.stoch <- function(kappa,s, z) {
+   prob <- min(c(kappa *s, 1))
+   return(rbinom(1, z, prob))
+}
+
+resurrected.stoch <-function(rho, r) {
+  return(rbinom(1, r, rho))
+}
 
 #' Gives simulated data for a deterministic SZR model
 #'
@@ -89,7 +102,7 @@ resurrected <-function(rho, r) {
 #' - `rho` The true resurrection rate
 #' @export
 
-generate.SZR.data <- function(N = NULL, initial.inf = NULL, total.T = NULL) {
+generate.SZR.data <- function(N = NULL, initial.inf = NULL, total.T = NULL, stochastic = TRUE) {
   
   # initial model conditions
   cond <- generate.start.cond(N = N, initial.inf = initial.inf)
@@ -111,9 +124,16 @@ generate.SZR.data <- function(N = NULL, initial.inf = NULL, total.T = NULL) {
   # run through SIR simulation for times 2 to total.T
   # results vector indices 1=S, 2=Z, 3=R
   for (t in 2:total.T) {
-    infected.t    <- infected(   beta,  values.t[2], values.t[3])
-    killed.t      <- killed(     kappa, values.t[2], values.t[3])
-    resurrected.t <- resurrected(rho,   values.t[4])
+    
+    if (stochastic == TRUE){
+      infected.t    <- infected.stoch(   beta,  values.t[2], values.t[3])
+      killed.t      <- killed.stoch(     kappa, values.t[2], values.t[3])
+      resurrected.t <- resurrected.stoch(rho,   values.t[4])
+    } else {
+      infected.t    <- infected.det(   beta,  values.t[2], values.t[3])
+      killed.t      <- killed.det(     kappa, values.t[2], values.t[3])
+      resurrected.t <- resurrected.det(rho,   values.t[4])
+    }
     
     S <- values.t[2] - infected.t
     Z <- values.t[3] + infected.t - killed.t + resurrected.t
@@ -136,9 +156,6 @@ generate.SZR.data <- function(N = NULL, initial.inf = NULL, total.T = NULL) {
   )
   return (return.val)
 }
-
-
-
 
 
 
