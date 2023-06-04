@@ -6,6 +6,7 @@ using namespace arma;
 using namespace Rcpp;
 
 
+
 //' Generate parameter samples from the prior
 //'
 //' @name generateParameterSamples
