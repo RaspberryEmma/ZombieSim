@@ -124,11 +124,7 @@ library(ZombieSim)
 new.example <- read.csv("data/new_example.csv", header = TRUE)
 new.example <- as.matrix(new.example[,3:5])
 head(new.example)
-priorMin <- c(0.0        , 0.00949, 0.0        , 0.00009, 0.0049)  // Estimate posterior distribution based on accepted parameter samples and weights
-  // arma::mat new_posteriorSamples = estimatePosterior(accepted["acceptedParamSamples"], accepted["weights"]);
-
-  // Add new posterior samples to existing posterior samples
-  // posteriorSamples = arma::join_rows(posteriorSamples, new_posteriorSamples);
+priorMin <- c(0.0        , 0.00949, 0.0        , 0.00009, 0.0049) 
 priorMax <- c(0.000000001, 0.0095 , 0.000000001, 0.0001 , 0.005 )
 res <- abcRej(new.example, 10000000, 500000, priorMin, priorMax)
 head(res)
