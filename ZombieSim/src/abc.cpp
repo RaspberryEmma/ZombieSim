@@ -234,6 +234,35 @@ Rcpp::List acceptRejectAndUpdate(const arma::mat& parameterSamples, const arma::
                             Rcpp::Named("weights") = weights);
 }
 
+//' Perform simple acceptance/rejection of parameter samples
+//'
+//' @name acceptReject
+//' @param parameterSamples Matrix of parameter samples (each row represents a set of parameter values)
+//' @param observedData Matrix of observed data (each row represents an observed data point)
+//' @param tolerance Tolerance threshold for accepting parameter samples
+//'
+//' @return  acceptedSamples Matrix of accepted parameter samples
+//' @return weights Vector of weights assigned to accepted parameter samples
+//' @export
+// [[Rcpp::export]]
+arma::mat acceptReject(const arma::mat& parameterSamples, const arma::mat& distances, double tolerance) {
+  // Get the number of parameter samples and data points
+  int numParticles = parameterSamples.n_rows;
+  int numTimePoints = distances.n_rows;
+
+  // Perform acceptance/rejection for each particle based on average of distances for all time points
+  arma::uvec acceptedIndices(numParticles, arma::fill::zeros); 
+  for (int i = 0; i < numParticles; ++i) {
+    double particle_distance = arma::sum(distances.col(i)) / numTimePoints;
+    if (particle_distance <= tolerance) {
+      acceptedIndices(i) = 1;
+    }
+  }
+  arma::uvec nonzeroIndices = arma::find(acceptedIndices!= 0);
+
+  // Return accepted parameter samples and weights as a list
+  return parameterSamples.rows(nonzeroIndices);
+}
 
 //' Estimate the posterior distribution based on accepted parameter samples and weights
 //'
@@ -271,53 +300,38 @@ arma::mat estimatePosterior(const arma::mat& acceptedSamples, const arma::vec& w
 
 //' ABC function
 //'
-//' @name abc
+//' @name abcRej
 //' @param observedData Observed data (e.g., as an Armadillo matrix or vector)
 //' @param numParticles Number of particles/samples to generate
-//' @param numIters Number of iterations
 //' @param epsilon Tolerance threshold
 //'
 //' @return posteriorSamples Generated posterior parameter samples (e.g., as an Armadillo matrix)
 //' @export
 // [[Rcpp::export]]
-arma::mat abc(const arma::mat& observedData, const int numParticles, const int numIters, const double epsilon = 0.1){
+arma::mat abcRej(const arma::mat& observedData, const int numParticles, const double epsilon, const arma::vec& priorMin, const arma::vec& priorMax){
   // Check the dimensions of the observed data
   if (observedData.n_cols != 3) {
     Rcpp::stop("The observed data must have three columns.");
   }
-  // TODO: make these changeable from arguments
-  const arma::vec priorMin = {0.0, 0.0, 0.0, 0.0, 0.0};
-  const arma::vec priorMax={0.1, 0.1, 0.1, 0.1, 0.1};
   int numParams = 5;
 
   // Initialize containers for parameter samples and posterior summaries
   arma::mat parameterSamples(numParticles, numParams);
   arma::mat posteriorSamples;
 
-  // Start ABC algorithm
-  for(int i = 0 ; i < numIters ; ++i){
-    // Generate parameter samples from prior 
-    parameterSamples = generateParameterSamples(numParticles, numParams, priorMin, priorMax);
+  // Generate parameter samples from prior 
+  parameterSamples = generateParameterSamples(numParticles, numParams, priorMin, priorMax);
 
-    // Generate simulated data based on parameter samples
-    int numTimePoints = observedData.n_rows;
-    arma::cube simulatedData = generateSimulatedData(parameterSamples, numTimePoints);
+  // Generate simulated data based on parameter samples
+  int numTimePoints = observedData.n_rows;
+  arma::cube simulatedData = generateSimulatedData(parameterSamples, numTimePoints);
 
-    // Compute summary statistics for simulated data
-    arma::mat simulatedSummaries = computeSummaryStatistics(simulatedData);
+  // Compute distance between observed and simulated data
+  arma::mat distances = calculateDistance(observedData, simulatedData);
 
-    // Compute distance between observed and simulated data
-    arma::mat distances = calculateDistance(observedData, simulatedData);
-    
-    // Compare distance to tolerance threshold and accept/reject parameter samples and update parameter samples based on acceptance/rejection step, assign higher weights to accepted samples
-    Rcpp::List accepted = acceptRejectAndUpdate(parameterSamples, distances, epsilon);
+  // Compare distance to tolerance threshold and accept/reject parameter samples and update parameter samples based on acceptance/rejection step, assign higher weights to accepted samples
+  arma::mat accepted = acceptReject(parameterSamples, distances, epsilon);
 
-    // Estimate posterior distribution based on accepted parameter samples and weights
-    arma::mat new_posteriorSamples = estimatePosterior(accepted["acceptedParamSamples"], accepted["weights"]);
-
-    // Add new posterior samples to existing posterior samples
-    posteriorSamples = arma::join_rows(posteriorSamples, new_posteriorSamples);
-  }
-  return posteriorSamples;
+  return accepted;
 }
 

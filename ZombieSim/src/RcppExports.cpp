@@ -73,6 +73,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// acceptReject
+arma::mat acceptReject(const arma::mat& parameterSamples, const arma::mat& distances, double tolerance);
+RcppExport SEXP _ZombieSim_acceptReject(SEXP parameterSamplesSEXP, SEXP distancesSEXP, SEXP toleranceSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type parameterSamples(parameterSamplesSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type distances(distancesSEXP);
+    Rcpp::traits::input_parameter< double >::type tolerance(toleranceSEXP);
+    rcpp_result_gen = Rcpp::wrap(acceptReject(parameterSamples, distances, tolerance));
+    return rcpp_result_gen;
+END_RCPP
+}
 // estimatePosterior
 arma::mat estimatePosterior(const arma::mat& acceptedSamples, const arma::vec& weights);
 RcppExport SEXP _ZombieSim_estimatePosterior(SEXP acceptedSamplesSEXP, SEXP weightsSEXP) {
@@ -85,17 +98,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// abc
-arma::mat abc(const arma::mat& observedData, const int numParticles, const int numIters, const double epsilon);
-RcppExport SEXP _ZombieSim_abc(SEXP observedDataSEXP, SEXP numParticlesSEXP, SEXP numItersSEXP, SEXP epsilonSEXP) {
+// abcRej
+arma::mat abcRej(const arma::mat& observedData, const int numParticles, const double epsilon, const arma::vec& priorMin, const arma::vec& priorMax);
+RcppExport SEXP _ZombieSim_abcRej(SEXP observedDataSEXP, SEXP numParticlesSEXP, SEXP epsilonSEXP, SEXP priorMinSEXP, SEXP priorMaxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type observedData(observedDataSEXP);
     Rcpp::traits::input_parameter< const int >::type numParticles(numParticlesSEXP);
-    Rcpp::traits::input_parameter< const int >::type numIters(numItersSEXP);
     Rcpp::traits::input_parameter< const double >::type epsilon(epsilonSEXP);
-    rcpp_result_gen = Rcpp::wrap(abc(observedData, numParticles, numIters, epsilon));
+    Rcpp::traits::input_parameter< const arma::vec& >::type priorMin(priorMinSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type priorMax(priorMaxSEXP);
+    rcpp_result_gen = Rcpp::wrap(abcRej(observedData, numParticles, epsilon, priorMin, priorMax));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -149,8 +163,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ZombieSim_computeSummaryStatistics", (DL_FUNC) &_ZombieSim_computeSummaryStatistics, 1},
     {"_ZombieSim_calculateDistance", (DL_FUNC) &_ZombieSim_calculateDistance, 2},
     {"_ZombieSim_acceptRejectAndUpdate", (DL_FUNC) &_ZombieSim_acceptRejectAndUpdate, 3},
+    {"_ZombieSim_acceptReject", (DL_FUNC) &_ZombieSim_acceptReject, 3},
     {"_ZombieSim_estimatePosterior", (DL_FUNC) &_ZombieSim_estimatePosterior, 2},
-    {"_ZombieSim_abc", (DL_FUNC) &_ZombieSim_abc, 4},
+    {"_ZombieSim_abcRej", (DL_FUNC) &_ZombieSim_abcRej, 5},
     {"_ZombieSim_rcpparma_hello_world", (DL_FUNC) &_ZombieSim_rcpparma_hello_world, 0},
     {"_ZombieSim_rcpparma_outerproduct", (DL_FUNC) &_ZombieSim_rcpparma_outerproduct, 1},
     {"_ZombieSim_rcpparma_innerproduct", (DL_FUNC) &_ZombieSim_rcpparma_innerproduct, 1},

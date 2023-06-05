@@ -65,6 +65,20 @@ acceptRejectAndUpdate <- function(parameterSamples, distances, tolerance) {
     .Call(`_ZombieSim_acceptRejectAndUpdate`, parameterSamples, distances, tolerance)
 }
 
+#' Perform simple acceptance/rejection of parameter samples
+#'
+#' @name acceptReject
+#' @param parameterSamples Matrix of parameter samples (each row represents a set of parameter values)
+#' @param observedData Matrix of observed data (each row represents an observed data point)
+#' @param tolerance Tolerance threshold for accepting parameter samples
+#'
+#' @return  acceptedSamples Matrix of accepted parameter samples
+#' @return weights Vector of weights assigned to accepted parameter samples
+#' @export
+acceptReject <- function(parameterSamples, distances, tolerance) {
+    .Call(`_ZombieSim_acceptReject`, parameterSamples, distances, tolerance)
+}
+
 #' Estimate the posterior distribution based on accepted parameter samples and weights
 #'
 #' @name estimatePosterior
@@ -79,16 +93,15 @@ estimatePosterior <- function(acceptedSamples, weights) {
 
 #' ABC function
 #'
-#' @name abc
+#' @name abcRej
 #' @param observedData Observed data (e.g., as an Armadillo matrix or vector)
 #' @param numParticles Number of particles/samples to generate
-#' @param numIters Number of iterations
 #' @param epsilon Tolerance threshold
 #'
 #' @return posteriorSamples Generated posterior parameter samples (e.g., as an Armadillo matrix)
 #' @export
-abc <- function(observedData, numParticles, numIters, epsilon = 0.1) {
-    .Call(`_ZombieSim_abc`, observedData, numParticles, numIters, epsilon)
+abcRej <- function(observedData, numParticles, epsilon, priorMin, priorMax) {
+    .Call(`_ZombieSim_abcRej`, observedData, numParticles, epsilon, priorMin, priorMax)
 }
 
 rcpparma_hello_world <- function() {
