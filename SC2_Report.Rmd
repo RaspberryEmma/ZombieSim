@@ -25,7 +25,7 @@ knitr::opts_chunk$set(echo = TRUE,
 library(ggplot2)
 
 library(devtools)
-library(ZombieSim)
+#library(ZombieSim)
 theme_set(theme_bw())
 ```
 
@@ -114,18 +114,36 @@ write.csv(new.example, file = "data/new_example.csv")
 legend.colors <- c("Susceptible" = "red", "Zombies" = "blue", "Removed" = "green")
 source(file = "intractmodelinf/R/plots.R")
 
-# plot.SZR(new.example$results)
+plot.SZR(new.example$results)
 ```
 
 
 ```{r}
 install.packages(pkgs = "ZombieSim_1.0.tar.gz", repos = NULL, type = "source")
 library(ZombieSim)
-new.example <- read.csv("data/new_example.csv", header = TRUE)
-new.example <- as.matrix(new.example[,3:5])
-head(new.example)
-priorMin <- c(0.0        , 0.00949, 0.0        , 0.00009, 0.0049) 
-priorMax <- c(0.000000001, 0.0095 , 0.000000001, 0.0001 , 0.005 )
-res <- abcRej(new.example, 10000000, 500000, priorMin, priorMax)
+#new.example <- read.csv("data/new_example.csv", header = TRUE)
+
+```
+
+```{r}
+simulated.mat <- new.example$results
+simulated.mat  <- as.matrix(simulated.mat[,2:4])
+head(simulated.mat )
+priorMin <- c(0.0        , 0.0001, 0.0        , 0.00009, 0.0049) 
+priorMax <- c(0.000000001, 0.00095 , 0.000000001, 0.0001 , 0.005 )
+res <- abcRej(simulated.mat , 10000000, 500000, priorMin, priorMax)
 head(res)
 ```
+
+```{r, message=FALSE}
+library(ggplot2)
+library(dplyr)
+means <- c(new.example$beta, new.example$kappa, new.example$rho)
+samples <- res[,2:4] %>%
+  as_tibble()
+colnames(samples) <- c("beta", "kappa", "rho")  
+
+plots <- plot.posterior.samples(samples, means)
+plots[[1]]
+```
+
