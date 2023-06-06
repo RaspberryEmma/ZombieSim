@@ -4,12 +4,10 @@
 \alias{generateSZRdata}
 \title{Gives simulated data for a deterministic SZR model}
 \usage{
-generateSZRdata(N = NULL, initial.inf = NULL, total.T = NULL)
+generateSZRdata(initial_cond, total.T = NULL)
 }
 \arguments{
-\item{N}{The total population}
-
-\item{initial.inf}{The number of infected individuals at time point 1}
+\item{initial_cond}{The initial conditions of the simulation, as produced by the `generateStartCond()` functionS}
 
 \item{total.T}{The number of time points to simulate}
 }

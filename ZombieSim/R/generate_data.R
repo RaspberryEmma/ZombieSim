@@ -11,18 +11,6 @@
 
 
 
-# ----- Preamble -----
-
-# rm(list = ls())
-
-# suppressPackageStartupMessages({
-#   library(dplyr)
-#   library(ggplot2)
-#   library(tidyverse)
-# })
-
-
-
 #' Gives a list of starting conditions of the model
 #'
 #' @param N Size of total population to model
@@ -61,24 +49,35 @@ generateStartCond <- function(N = NULL, initial.inf = NULL, beta =  2/(N), kappa
   return (return.val)
 }
 
-
-infected <- function(beta, s, z) {
+infected.det <- function(beta, s, z) {
   return(as.integer(s*(min(c(beta *z, 1)))))
 }
 
-killed <- function(kappa,s, z) {
+killed.det <- function(kappa,s, z) {
   return(as.integer(z*(min(kappa *s, 1))))
 }
 
-resurrected <-function(rho, r) {
+resurrected.det <-function(rho, r) {
   return ((as.integer(rho*r)))
 }
 
+infected.stoch <- function(beta,s, z){
+  prob <- min(c(beta *z, 1))
+  return(sum(rbinom(s, 1, prob)))
+}
+
+killed.stoch <- function(kappa,s, z) {
+  prob <- min(c(kappa *s, 1))
+  return(sum(rbinom(z, 1, prob)))
+}
+
+resurrected.stoch <-function(rho, r) {
+  return(rbinom(1, r, rho))
+}
 
 #' Gives simulated data for a deterministic SZR model
 #'
-#' @param N The total population 
-#' @param initial.inf The number of infected individuals at time point 1
+#' @param initial_cond The initial conditions of the simulation, as produced by the `generateStartCond()` functionS
 #' @param total.T The number of time points to simulate
 #'
 #' @return A list with elements
@@ -88,44 +87,53 @@ resurrected <-function(rho, r) {
 #' - `kappa` The true kill rate
 #' - `rho` The true resurrection rate
 #' @export
-generateSZRdata <- function(N = NULL, initial.inf = NULL, total.T = NULL) {
+generateSZRdata <- function(initial_cond, total.T = NULL) {
   
   # initial model conditions
-  cond <- generateStartCond(N = N, initial.inf = initial.inf)
+  cond <- initial_cond
   
   # constant model parameters
   N       <- cond$N
   beta    <- cond$beta
-  kappa   <- cond$kappaS
+  kappa   <- cond$kappa
   rho     <- cond$rho
   
   
   # results array to hold values of each function at times 1 to total.T
-  results <- array(data = NA, dim = c(total.T, length(cond$populations)+1) )
-  results[1, ] <- c(1, cond$populations)
+  results <- array(data = NA, dim = c(total.T, length(cond$populations)+3) )
+  results[1, ] <- c(1, cond$populations, 0, 0)
   
   # vector to hold current sim values
-  values.t <- c(1, cond$populations)
-  
+  values.t <- c(1, cond$populations, 0, 0)
+  S <- values.t[2]
+  Z <- values.t[3]
+  R <- values.t[4]
   # run through SIR simulation for times 2 to total.T
   # results vector indices 1=S, 2=Z, 3=R
   for (t in 2:total.T) {
-    infected.t    <- infected(   beta,  values.t[2], values.t[3])
-    killed.t      <- killed(     kappa, values.t[2], values.t[3])
-    resurrected.t <- resurrected(rho,   values.t[4])
+    
+    if (stochastic == TRUE){
+      infected.t    <- infected.stoch(   beta,  S, Z)
+      killed.t      <- killed.stoch(     kappa, S, Z)
+      resurrected.t <- resurrected.stoch(rho,   values.t[4])
+    } else {
+      infected.t    <- infected.det(   beta,  S, Z)
+      killed.t      <- killed.det(     kappa, S, Z)
+      resurrected.t <- resurrected.det(rho,   values.t[4])
+    }
     
     S <- values.t[2] - infected.t
-    Z <- values.t[3] + infected.t - killed.t + resurrected.t
-    R <- values.t[4] + killed.t - resurrected.t
+    Z <- values.t[3] + infected.t - killed.t 
+    R <- values.t[4] + killed.t 
     
-    values.t     <- c(t, S, Z, R)
+    values.t     <- c(t, S, Z, R, infected.t, killed.t)
     results[t, ] <- values.t
   }
   
   # convert to data.frame to explicitly record column meaning
   results           <- as.data.frame(results)
-  colnames(results) <- c("t", "S.t", "Z.t", "R.t")
-
+  colnames(results) <- c("t", "S.t", "Z.t", "R.t", "infected", "killed")
+  
   return.val <- list(
     results = results,
     N = N,
