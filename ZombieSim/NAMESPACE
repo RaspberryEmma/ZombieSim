@@ -1,3 +1,7 @@
 useDynLib(ZombieSim, .registration=TRUE)
 importFrom(Rcpp, evalCpp)
 exportPattern("^[[:alpha:]]+")
+export(generateSZRdata)
+export(generateStartCond)
+export(abcRej)
+export(computeSummaryStatistics)
