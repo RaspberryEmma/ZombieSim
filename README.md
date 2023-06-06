@@ -9,7 +9,7 @@ of an outbreak of zombie infection"](https://loe.org/images/content/091023/Zombi
 This package can be downloaded using the `devtools` as below:
 ``` r
 # install.packages("devtools")
-devtools::install_github("RaspberryEmma/Intractable-Models-Sim-Study")
+devtools::install_github("RaspberryEmma/Intractable-Models-Sim-Study/ZombieSim")
 ```
 
 ## Example 
