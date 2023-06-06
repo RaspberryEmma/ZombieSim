@@ -8,10 +8,6 @@
 # Started:          23/05/2023
 # Most Recent Edit: 31/05/2023
 # ****************************************
-#' @importFrom Rcpp evalCpp
-#' @importFrom stats rbinom
-#' @useDynLib ZombieSim
-NULL
 
 
 #' Gives a list of starting conditions of the model
@@ -152,7 +148,8 @@ generateSZRdata <- function(initial_cond, total.T = NULL, stochastic = TRUE) {
 }
 
 
-
-
-
+#' @importFrom Rcpp evalCpp
+#' @importFrom stats rbinom
+#' @useDynLib ZombieSim
+NULL
 
