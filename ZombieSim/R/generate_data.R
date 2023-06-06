@@ -8,7 +8,10 @@
 # Started:          23/05/2023
 # Most Recent Edit: 31/05/2023
 # ****************************************
-
+#' @importFrom Rcpp evalCpp
+#' @importFrom stats rbinom
+#' @useDynLib ZombieSim
+NULL
 
 
 #' Gives a list of starting conditions of the model
@@ -26,7 +29,6 @@
 #' - `kappa` The kappa supplied as input, otherwise defaults to 3/N
 #' - `rho` The rho supplied as input, otherwise defaults to 1/N
 #' @export
-
 generateStartCond <- function(N = NULL, initial.inf = NULL, beta =  2/(N), kappa = 3/(N), rho = 1/N){
   # central model parameters
   #beta <- rnorm(n = 1, mean = 2/(N), sd = 1/(10 * N^2)) # contact rate, the "R statistic" (R_0)
@@ -49,36 +51,13 @@ generateStartCond <- function(N = NULL, initial.inf = NULL, beta =  2/(N), kappa
   return (return.val)
 }
 
-infected.det <- function(beta, s, z) {
-  return(as.integer(s*(min(c(beta *z, 1)))))
-}
 
-killed.det <- function(kappa,s, z) {
-  return(as.integer(z*(min(kappa *s, 1))))
-}
-
-resurrected.det <-function(rho, r) {
-  return ((as.integer(rho*r)))
-}
-
-infected.stoch <- function(beta,s, z){
-  prob <- min(c(beta *z, 1))
-  return(sum(rbinom(s, 1, prob)))
-}
-
-killed.stoch <- function(kappa,s, z) {
-  prob <- min(c(kappa *s, 1))
-  return(sum(rbinom(z, 1, prob)))
-}
-
-resurrected.stoch <-function(rho, r) {
-  return(rbinom(1, r, rho))
-}
 
 #' Gives simulated data for a deterministic SZR model
 #'
 #' @param initial_cond The initial conditions of the simulation, as produced by the `generateStartCond()` functionS
 #' @param total.T The number of time points to simulate
+#' @param stochastic Should simulation be stochastic or deterministic
 #'
 #' @return A list with elements
 #' - `results` A data frame with `total.T` rows and 4 columns showing the population counts for each time point
@@ -87,7 +66,7 @@ resurrected.stoch <-function(rho, r) {
 #' - `kappa` The true kill rate
 #' - `rho` The true resurrection rate
 #' @export
-generateSZRdata <- function(initial_cond, total.T = NULL) {
+generateSZRdata <- function(initial_cond, total.T = NULL, stochastic = TRUE) {
   
   # initial model conditions
   cond <- initial_cond
@@ -108,6 +87,34 @@ generateSZRdata <- function(initial_cond, total.T = NULL) {
   S <- values.t[2]
   Z <- values.t[3]
   R <- values.t[4]
+  
+  # Deterministic update functions
+  infected.det <- function(beta, s, z) {
+    return(as.integer(s*(min(c(beta *z, 1)))))
+  }
+  
+  killed.det <- function(kappa,s, z) {
+    return(as.integer(z*(min(kappa *s, 1))))
+  }
+  
+  resurrected.det <-function(rho, r) {
+    return ((as.integer(rho*r)))
+  }
+  
+  # Stochastic Update Functions
+  infected.stoch <- function(beta,s, z){
+    prob <- min(c(beta *z, 1))
+    return(sum(rbinom(s, 1, prob)))
+  }
+  
+  killed.stoch <- function(kappa,s, z) {
+    prob <- min(c(kappa *s, 1))
+    return(sum(rbinom(z, 1, prob)))
+  }
+  
+  resurrected.stoch <-function(rho, r) {
+    return(rbinom(1, r, rho))
+  }
   # run through SIR simulation for times 2 to total.T
   # results vector indices 1=S, 2=Z, 3=R
   for (t in 2:total.T) {

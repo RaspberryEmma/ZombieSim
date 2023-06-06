@@ -9,9 +9,9 @@ acceptRejectAndUpdate(parameterSamples, distances, tolerance)
 \arguments{
 \item{parameterSamples}{Matrix of parameter samples (each row represents a set of parameter values)}
 
-\item{tolerance}{Tolerance threshold for accepting parameter samples}
+\item{distances}{Euclidean distance between observed and simulated data}
 
-\item{observedData}{Matrix of observed data (each row represents an observed data point)}
+\item{tolerance}{Tolerance threshold for accepting parameter samples}
 }
 \value{
 acceptedSamples Matrix of accepted parameter samples

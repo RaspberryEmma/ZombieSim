@@ -9,7 +9,7 @@ using namespace Rcpp;
 //' Generate parameter samples from the prior
 //'
 //' @name generateParameterSamples
-//' @param num_Params Number of parameters
+//' @param numParams Number of parameters
 //' @param numParticles Number of parameter samples to generate
 //' @param priorMin Lower bound of the prior distribution
 //' @param priorMax Upper bound of the prior distribution
@@ -50,7 +50,6 @@ arma::mat generateParameterSamples(int numParticles, int numParams, arma::vec pr
 //'
 //' @name generateSimulatedData
 //' @param parameters A matrix of parameter values (each row represents a set of parameter values)
-//' @param numParticles Number of data samples to generate
 //' @param numTimePoints Number of time points to simulate
 //'
 //' @return  A 3D array of simulated data with dimensions (numParticles, numTimePoints, 3). The third dimension represents the populations: 1 - Susceptible, 2 - Zombie, 3 - Removed
@@ -193,8 +192,9 @@ arma::mat calculateDistance(const arma::mat& observedData, const arma::cube& sim
 //' Perform acceptance/rejection of parameter samples and update with weights
 //'
 //' @name acceptRejectAndUpdate
+//' 
 //' @param parameterSamples Matrix of parameter samples (each row represents a set of parameter values)
-//' @param observedData Matrix of observed data (each row represents an observed data point)
+//' @param distances Euclidean distance between observed and simulated data
 //' @param tolerance Tolerance threshold for accepting parameter samples
 //'
 //' @return  acceptedSamples Matrix of accepted parameter samples
@@ -238,10 +238,10 @@ Rcpp::List acceptRejectAndUpdate(const arma::mat& parameterSamples, const arma::
 //'
 //' @name acceptReject
 //' @param parameterSamples Matrix of parameter samples (each row represents a set of parameter values)
-//' @param observedData Matrix of observed data (each row represents an observed data point)
+//' @param distances Euclidean distance between observed and simulated data
 //' @param tolerance Tolerance threshold for accepting parameter samples
 //'
-//' @return  acceptedSamples Matrix of accepted parameter samples
+//' @return acceptedSamples Matrix of accepted parameter samples
 //' @return weights Vector of weights assigned to accepted parameter samples
 //' @export
 // [[Rcpp::export]]
@@ -304,6 +304,8 @@ arma::mat estimatePosterior(const arma::mat& acceptedSamples, const arma::vec& w
 //' @param observedData Observed data (e.g., as an Armadillo matrix or vector)
 //' @param numParticles Number of particles/samples to generate
 //' @param epsilon Tolerance threshold
+//' @param priorMin Lower bound of the prior distribution
+//' @param priorMax Upper bound of the prior distribution
 //'
 //' @return posteriorSamples Generated posterior parameter samples (e.g., as an Armadillo matrix)
 //' @export
