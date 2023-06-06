@@ -4,7 +4,7 @@
 #' Generate parameter samples from the prior
 #'
 #' @name generateParameterSamples
-#' @param num_Params Number of parameters
+#' @param numParams Number of parameters
 #' @param numParticles Number of parameter samples to generate
 #' @param priorMin Lower bound of the prior distribution
 #' @param priorMax Upper bound of the prior distribution
@@ -12,20 +12,19 @@
 #' @return  parameterSamples Generated parameter samples as an Armadillo matrix
 #' @export
 generateParameterSamples <- function(numParticles, numParams, priorMin, priorMax) {
-    .Call(`_ZombieSim_generateParameterSamples`, numParticles, numParams, priorMin, priorMax)
+    .Call('_ZombieSim_generateParameterSamples', PACKAGE = 'ZombieSim', numParticles, numParams, priorMin, priorMax)
 }
 
 #' Function to generate simulated data from the zombie outbreak model
 #'
 #' @name generateSimulatedData
 #' @param parameters A matrix of parameter values (each row represents a set of parameter values)
-#' @param numParticles Number of data samples to generate
 #' @param numTimePoints Number of time points to simulate
 #'
 #' @return  A 3D array of simulated data with dimensions (numParticles, numTimePoints, 3). The third dimension represents the populations: 1 - Susceptible, 2 - Zombie, 3 - Removed
 #' @export
 generateSimulatedData <- function(parameters, numTimePoints) {
-    .Call(`_ZombieSim_generateSimulatedData`, parameters, numTimePoints)
+    .Call('_ZombieSim_generateSimulatedData', PACKAGE = 'ZombieSim', parameters, numTimePoints)
 }
 
 #' Function to compute summary statistics for simulated data from the zombie outbreak model
@@ -36,7 +35,7 @@ generateSimulatedData <- function(parameters, numTimePoints) {
 #' @return A matrix of summary statistics with dimensions (numParticles, numStats). Each row represents the summary statistics for a particular particle. The number of columns (numStats) depends on the selected summary statistics
 #' @export
 computeSummaryStatistics <- function(simulatedData) {
-    .Call(`_ZombieSim_computeSummaryStatistics`, simulatedData)
+    .Call('_ZombieSim_computeSummaryStatistics', PACKAGE = 'ZombieSim', simulatedData)
 }
 
 #' Function to calculate the euclidean distance between observed and simulated data
@@ -48,35 +47,36 @@ computeSummaryStatistics <- function(simulatedData) {
 #' @return distances Vector of distances between observed and simulated data points
 #' @export
 calculateDistance <- function(observedData, simulatedData) {
-    .Call(`_ZombieSim_calculateDistance`, observedData, simulatedData)
+    .Call('_ZombieSim_calculateDistance', PACKAGE = 'ZombieSim', observedData, simulatedData)
 }
 
 #' Perform acceptance/rejection of parameter samples and update with weights
 #'
 #' @name acceptRejectAndUpdate
+#' 
 #' @param parameterSamples Matrix of parameter samples (each row represents a set of parameter values)
-#' @param observedData Matrix of observed data (each row represents an observed data point)
+#' @param distances Euclidean distance between observed and simulated data
 #' @param tolerance Tolerance threshold for accepting parameter samples
 #'
 #' @return  acceptedSamples Matrix of accepted parameter samples
 #' @return weights Vector of weights assigned to accepted parameter samples
 #' @export
 acceptRejectAndUpdate <- function(parameterSamples, distances, tolerance) {
-    .Call(`_ZombieSim_acceptRejectAndUpdate`, parameterSamples, distances, tolerance)
+    .Call('_ZombieSim_acceptRejectAndUpdate', PACKAGE = 'ZombieSim', parameterSamples, distances, tolerance)
 }
 
 #' Perform simple acceptance/rejection of parameter samples
 #'
 #' @name acceptReject
 #' @param parameterSamples Matrix of parameter samples (each row represents a set of parameter values)
-#' @param observedData Matrix of observed data (each row represents an observed data point)
+#' @param distances Euclidean distance between observed and simulated data
 #' @param tolerance Tolerance threshold for accepting parameter samples
 #'
-#' @return  acceptedSamples Matrix of accepted parameter samples
+#' @return acceptedSamples Matrix of accepted parameter samples
 #' @return weights Vector of weights assigned to accepted parameter samples
 #' @export
 acceptReject <- function(parameterSamples, distances, tolerance) {
-    .Call(`_ZombieSim_acceptReject`, parameterSamples, distances, tolerance)
+    .Call('_ZombieSim_acceptReject', PACKAGE = 'ZombieSim', parameterSamples, distances, tolerance)
 }
 
 #' Estimate the posterior distribution based on accepted parameter samples and weights
@@ -88,7 +88,7 @@ acceptReject <- function(parameterSamples, distances, tolerance) {
 #' @return posteriorSamples Matrix of posterior parameter samples
 #' @export
 estimatePosterior <- function(acceptedSamples, weights) {
-    .Call(`_ZombieSim_estimatePosterior`, acceptedSamples, weights)
+    .Call('_ZombieSim_estimatePosterior', PACKAGE = 'ZombieSim', acceptedSamples, weights)
 }
 
 #' ABC function
@@ -97,26 +97,12 @@ estimatePosterior <- function(acceptedSamples, weights) {
 #' @param observedData Observed data (e.g., as an Armadillo matrix or vector)
 #' @param numParticles Number of particles/samples to generate
 #' @param epsilon Tolerance threshold
+#' @param priorMin Lower bound of the prior distribution
+#' @param priorMax Upper bound of the prior distribution
 #'
 #' @return posteriorSamples Generated posterior parameter samples (e.g., as an Armadillo matrix)
 #' @export
 abcRej <- function(observedData, numParticles, epsilon, priorMin, priorMax) {
-    .Call(`_ZombieSim_abcRej`, observedData, numParticles, epsilon, priorMin, priorMax)
-}
-
-rcpparma_hello_world <- function() {
-    .Call(`_ZombieSim_rcpparma_hello_world`)
-}
-
-rcpparma_outerproduct <- function(x) {
-    .Call(`_ZombieSim_rcpparma_outerproduct`, x)
-}
-
-rcpparma_innerproduct <- function(x) {
-    .Call(`_ZombieSim_rcpparma_innerproduct`, x)
-}
-
-rcpparma_bothproducts <- function(x) {
-    .Call(`_ZombieSim_rcpparma_bothproducts`, x)
+    .Call('_ZombieSim_abcRej', PACKAGE = 'ZombieSim', observedData, numParticles, epsilon, priorMin, priorMax)
 }
 

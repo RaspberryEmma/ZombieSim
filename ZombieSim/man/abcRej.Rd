@@ -12,6 +12,10 @@ abcRej(observedData, numParticles, epsilon, priorMin, priorMax)
 \item{numParticles}{Number of particles/samples to generate}
 
 \item{epsilon}{Tolerance threshold}
+
+\item{priorMin}{Lower bound of the prior distribution}
+
+\item{priorMax}{Upper bound of the prior distribution}
 }
 \value{
 posteriorSamples Generated posterior parameter samples (e.g., as an Armadillo matrix)
