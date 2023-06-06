@@ -4,12 +4,14 @@
 \alias{generateSZRdata}
 \title{Gives simulated data for a deterministic SZR model}
 \usage{
-generateSZRdata(initial_cond, total.T = NULL)
+generateSZRdata(initial_cond, total.T = NULL, stochastic = TRUE)
 }
 \arguments{
 \item{initial_cond}{The initial conditions of the simulation, as produced by the `generateStartCond()` functionS}
 
 \item{total.T}{The number of time points to simulate}
+
+\item{stochastic}{Should simulation be stochastic or deterministic}
 }
 \value{
 A list with elements

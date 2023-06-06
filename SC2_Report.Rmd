@@ -3,6 +3,7 @@ title: "Using ABC to Infer Parameters of a Simulated Zombie Epidemic"
 author: "Henry Bourne, Emma Tarmey, Rachel Wood"
 output: 
   pdf_document:
+    df_print: paged
     keep_tex: yes
 date: "June 2023"
 header-includes:
@@ -25,7 +26,7 @@ knitr::opts_chunk$set(echo = TRUE,
 library(ggplot2)
 
 library(devtools)
-#library(ZombieSim)
+library(ZombieSim)
 theme_set(theme_bw())
 ```
 
@@ -38,48 +39,6 @@ theme_set(theme_bw())
 ## Integration of R and C++
 
 ## Simulations
-
-```{r}
-# ----- Working Examples -----
-
-# Replace source call with install.github() and library calls when package is finished!
-# install.github("https://github.com/RaspberryEmma/Intractable-Models-Sim-Study")
-# library(intractmodelinf)
-
-# source("intractmodelinf/R/generate_data.R")
-suppressPackageStartupMessages({
-  library(dplyr)
-  library(ggplot2)
-  library(knitr)
-  library(tidyverse)
-})
-
-bristol.uni.N <- 29434
-bristol.N     <- 467099
-UK.N          <- 67081234
-
-bristol.uni.example <- generateSZRdata(N     = bristol.uni.N,
-                                         initial.inf = 10,
-                                         total.T     = 150)
-
-bristol.example <- generateSZRdata(N     = bristol.N,
-                                     initial.inf = 10,
-                                     total.T     = 150)
-
-UK.example <- generateSZRdata(N     = UK.N,
-                                initial.inf = 10,
-                                total.T     = 150)
-
-bristol.example %>% head() %>% knitr::kable()
-
-
-# ----- Save Data -----
-
-write.csv( bristol.uni.example, file = "data/bristol_uni_example.csv", row.names = FALSE )
-write.csv( bristol.example,     file = "data/bristol_example.csv", row.names = FALSE )
-write.csv( UK.example,          file = "data/UK_example.csv", row.names = FALSE )
-
-```
 
 ## Parallelisation
 
@@ -95,11 +54,11 @@ We use this to simulate an outbreak for 3 different populations of different siz
 The data on these simulated outbreaks is included in our package
 
 ```{r}
-bristol.N     <-5000
-new.example <- generateSZRdata(N= bristol.N,
-                  initial.inf = 10,
-                  total.T     = 50)
-write.csv(new.example, file = "data/new_example.csv")
+N     <-5000
+initial <- generateStartCond(N, initial.inf = 10)
+
+new.example <- generateSZRdata(initial ,total.T     = 50)
+#write.csv(new.example, file = "data/new_example.csv")
 ```
 
 # Implementing ABC
@@ -138,6 +97,8 @@ head(res)
 ```{r, message=FALSE}
 library(ggplot2)
 library(dplyr)
+
+
 means <- c(new.example$beta, new.example$kappa, new.example$rho)
 samples <- res[,2:4] %>%
   as_tibble()
