@@ -26,14 +26,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // generateSimulatedData
-arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints, const arma::vec& starting);
+arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints, const arma::rowvec& starting);
 RcppExport SEXP _ZombieSim_generateSimulatedData(SEXP parametersSEXP, SEXP numTimePointsSEXP, SEXP startingSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type parameters(parametersSEXP);
     Rcpp::traits::input_parameter< int >::type numTimePoints(numTimePointsSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type starting(startingSEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type starting(startingSEXP);
     rcpp_result_gen = Rcpp::wrap(generateSimulatedData(parameters, numTimePoints, starting));
     return rcpp_result_gen;
 END_RCPP

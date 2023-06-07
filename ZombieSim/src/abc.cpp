@@ -57,7 +57,7 @@ arma::mat generateParameterSamples(int numParticles, int numParams, arma::vec pr
 //' @return  A 3D array of simulated data with dimensions (numParticles, numTimePoints, 3). The third dimension represents the populations: 1 - Susceptible, 2 - Zombie, 3 - Removed
 //' @export
 // [[Rcpp::export]]
-arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints, const arma::vec& starting) {
+arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints, const arma::rowvec& starting) {
   int numParticles = parameters.n_rows; // Number of parameter samples
   arma::cube simulatedData(numTimePoints, 3, numParticles, arma::fill::zeros);
   for (int i = 0; i < numParticles; ++i) {
@@ -333,12 +333,13 @@ arma::mat abcRej(const arma::mat& observedData, const int numParticles, const do
 
   // Generate simulated data based on parameter samples
   int numTimePoints = observedData.n_rows;
-  arma::vec starting = observedData.row(0);
+  arma::rowvec starting = observedData.row(1);
+  
   arma::cube simulatedData = generateSimulatedData(parameterSamples, numTimePoints, starting);
-
+  
   // Compute distance between observed and simulated data
   arma::mat distances = calculateDistance(observedData, simulatedData);
-
+  
   // Compare distance to tolerance threshold and accept/reject parameter samples and update parameter samples based on acceptance/rejection step, assign higher weights to accepted samples
   arma::mat accepted = acceptReject(parameterSamples, distances, epsilon);
 
