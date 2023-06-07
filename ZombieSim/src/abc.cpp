@@ -1,6 +1,7 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
 #include <Rcpp.h>
+#include <cmath>
 
 using namespace arma;
 using namespace Rcpp;
@@ -51,18 +52,19 @@ arma::mat generateParameterSamples(int numParticles, int numParams, arma::vec pr
 //' @name generateSimulatedData
 //' @param parameters A matrix of parameter values (each row represents a set of parameter values)
 //' @param numTimePoints Number of time points to simulate
+//' @param starting State of the population in first time point, 0 - Susceptible, 1 - Zombie - 2, 3 - Removed
 //'
 //' @return  A 3D array of simulated data with dimensions (numParticles, numTimePoints, 3). The third dimension represents the populations: 1 - Susceptible, 2 - Zombie, 3 - Removed
 //' @export
 // [[Rcpp::export]]
-arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints) {
+arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints, const arma::vec& starting) {
   int numParticles = parameters.n_rows; // Number of parameter samples
   arma::cube simulatedData(numTimePoints, 3, numParticles, arma::fill::zeros);
   for (int i = 0; i < numParticles; ++i) {
     // Initialize populations with initial values
-    double S = 500; // Initial susceptible population size
-    double Z = 1; // Initial infected (zombie) population size
-    double R = 0; // Initial number removed from the population
+    double S = starting[0]; // Initial susceptible population size
+    double Z = starting[1]; // Initial infected (zombie) population size
+    double R = starting[2]; // Initial number removed from the population
     
     simulatedData(0, 0, i) = S;
     simulatedData(0, 1, i) = Z;
@@ -91,11 +93,16 @@ arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints)
       if (defeatRate < 0 || defeatRate > 1) {
         Rcpp::stop("The defeat rate must be between 0 and 1.");
       }
+      
+      int infected = sum(Rcpp::rbinom(S, 1, std::min(encounterRate *Z,1.0)));
+      int killed = sum(Rcpp::rbinom(Z, 1, std::min(defeatRate *S,1.0)));
+      int resurrected = sum(Rcpp::rbinom(R, 1, resurrectionRate));
+      
 
       // Update population sizes based on the model equations
-      int newS = S + birthRate * S - encounterRate * S * Z - deathRate * S;   // Update susceptible individuals
-      int newZ = Z + encounterRate * S * Z + R * resurrectionRate - defeatRate * S * Z;   // Update zombies
-      int newR = R + deathRate * S + defeatRate * S * Z - resurrectionRate * R;   // Update removed individuals
+      int newS = S - infected;   // Update susceptible individuals
+      int newZ = Z + infected - killed + resurrected;   // Update zombies
+      int newR = R + killed - resurrected;  // Update removed individuals
 
       // Store the population sizes in the simulated data cube
       simulatedData(t, 0, i) = newS;
@@ -326,7 +333,8 @@ arma::mat abcRej(const arma::mat& observedData, const int numParticles, const do
 
   // Generate simulated data based on parameter samples
   int numTimePoints = observedData.n_rows;
-  arma::cube simulatedData = generateSimulatedData(parameterSamples, numTimePoints);
+  arma::vec starting = observedData.row(0);
+  arma::cube simulatedData = generateSimulatedData(parameterSamples, numTimePoints, starting);
 
   // Compute distance between observed and simulated data
   arma::mat distances = calculateDistance(observedData, simulatedData);
