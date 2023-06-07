@@ -15,8 +15,9 @@ test_that("generateSimulatedData returns the correct dimensions", {
     numParticles <- 3
     parameters <- matrix(runif(5*3), nrow = numParticles, ncol = 5)
     numTimePoints <- 10
+    start <- c(500,10,0)
     
-    simulatedData <- generateSimulatedData(parameters, numTimePoints)
+    simulatedData <- generateSimulatedData(parameters, numTimePoints,start)
     expect_equal(dim(simulatedData), c(numTimePoints, 3, numParticles))
 })
 
@@ -25,8 +26,9 @@ test_that("generateSimulatedData throws an error for invalid birth rate", {
     parameters <- matrix(runif(5*3), nrow = numParticles, ncol = 5)
     parameters[1,] <- c(-0.1, 0.2, 0.3, 0.4, 1.1)
     numTimePoints <- 10
+    start <- c(500,10,0)
 
-    expect_error(generateSimulatedData(parameters, numTimePoints),
+    expect_error(generateSimulatedData(parameters, numTimePoints,start),
                "The birth rate must be between 0 and 1.")
 })
 
@@ -35,8 +37,9 @@ test_that("generateSimulatedData throws an error for invalid encounter rate", {
     parameters <- matrix(runif(5*3), nrow = numParticles, ncol = 5)
     parameters[2,] <- c(0.1, 1.2, -0.3, 0.4, 0.5)
     numTimePoints <- 10
+    start <- c(500,10,0)
     
-    expect_error(generateSimulatedData(parameters, numTimePoints),
+    expect_error(generateSimulatedData(parameters, numTimePoints, start),
                 "The encounter rate must be between 0 and 1.")
 })
 
@@ -44,8 +47,9 @@ test_that("computeSummaryStatistics returns correct output", {
     # Generate example simulated data
     numParticles <- 100
     numTimePoints <- 10
+    start <- c(500,10,0)
     testInputParameters <- generateParameterSamples(numParticles, 5, c(0.0, 0.00949, 0.0, 0.00009, 0.0049), c(0.000000001, 0.0095, 0.000000001, 0.0001, 0.005))
-    simulatedData <- generateSimulatedData(testInputParameters, numTimePoints)
+    simulatedData <- generateSimulatedData(testInputParameters, numTimePoints, start)
     # Compute summary statistics
     summaryStats <- computeSummaryStatistics(simulatedData)
 

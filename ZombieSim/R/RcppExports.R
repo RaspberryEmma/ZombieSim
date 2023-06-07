@@ -20,11 +20,12 @@ generateParameterSamples <- function(numParticles, numParams, priorMin, priorMax
 #' @name generateSimulatedData
 #' @param parameters A matrix of parameter values (each row represents a set of parameter values)
 #' @param numTimePoints Number of time points to simulate
+#' @param starting State of the population in first time point, 0 - Susceptible, 1 - Zombie - 2, 3 - Removed
 #'
 #' @return  A 3D array of simulated data with dimensions (numParticles, numTimePoints, 3). The third dimension represents the populations: 1 - Susceptible, 2 - Zombie, 3 - Removed
 #' @export
-generateSimulatedData <- function(parameters, numTimePoints) {
-    .Call('_ZombieSim_generateSimulatedData', PACKAGE = 'ZombieSim', parameters, numTimePoints)
+generateSimulatedData <- function(parameters, numTimePoints, starting) {
+    .Call('_ZombieSim_generateSimulatedData', PACKAGE = 'ZombieSim', parameters, numTimePoints, starting)
 }
 
 #' Function to compute summary statistics for simulated data from the zombie outbreak model

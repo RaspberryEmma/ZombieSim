@@ -26,14 +26,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // generateSimulatedData
-arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints);
-RcppExport SEXP _ZombieSim_generateSimulatedData(SEXP parametersSEXP, SEXP numTimePointsSEXP) {
+arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints, const arma::vec& starting);
+RcppExport SEXP _ZombieSim_generateSimulatedData(SEXP parametersSEXP, SEXP numTimePointsSEXP, SEXP startingSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type parameters(parametersSEXP);
     Rcpp::traits::input_parameter< int >::type numTimePoints(numTimePointsSEXP);
-    rcpp_result_gen = Rcpp::wrap(generateSimulatedData(parameters, numTimePoints));
+    Rcpp::traits::input_parameter< const arma::vec& >::type starting(startingSEXP);
+    rcpp_result_gen = Rcpp::wrap(generateSimulatedData(parameters, numTimePoints, starting));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -116,7 +117,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ZombieSim_generateParameterSamples", (DL_FUNC) &_ZombieSim_generateParameterSamples, 4},
-    {"_ZombieSim_generateSimulatedData", (DL_FUNC) &_ZombieSim_generateSimulatedData, 2},
+    {"_ZombieSim_generateSimulatedData", (DL_FUNC) &_ZombieSim_generateSimulatedData, 3},
     {"_ZombieSim_computeSummaryStatistics", (DL_FUNC) &_ZombieSim_computeSummaryStatistics, 1},
     {"_ZombieSim_calculateDistance", (DL_FUNC) &_ZombieSim_calculateDistance, 2},
     {"_ZombieSim_acceptRejectAndUpdate", (DL_FUNC) &_ZombieSim_acceptRejectAndUpdate, 3},
