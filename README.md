@@ -1,6 +1,7 @@
 # ZombieSim
 The goal of the `ZombieSim` package is to provide tools for inference for models with intractable likelihoods using Approximate Bayesian Computation (ABC). It uses R with integrated C++ code (using Rcpp and RcppArmadillo) to help with computational speed.
 
+
 This also contains functions to simulate a zombie epidemic under the model described in ["When zombies attack!: Mathematical modelling
 of an outbreak of zombie infection"](https://loe.org/images/content/091023/Zombie%20Publication.pdf). We use the SZR model given in the paper with the natural birth and death rate set to zero. 
 
@@ -21,8 +22,10 @@ Lets now run through an example of how to use various parameters from the packag
 N <-5000
 initial <- generateStartCond(N, initial.inf = 10)
 new.example <- generateSZRdata(initial, total.T = 50)
+
 # Let's plot our data!
 plot.SZR(new.example$results)
+
 # Let's get our samples for the posterior of the parameters
 simulated.mat <- new.example$results
 simulated.mat  <- as.matrix(simulated.mat[,2:4])
@@ -30,6 +33,7 @@ head(simulated.mat )
 priorMin <- c(0.000004,0.000004,  0.000004) 
 priorMax <- c(0.0015 ,0.001, 0.001)
 res <- abcRej(simulated.mat , 10000000, 1000, priorMin, priorMax)
+
 # Let's plot our simulated values alongside the true parameters!
 library(ggplot2)
 library(dplyr)
