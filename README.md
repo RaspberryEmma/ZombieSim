@@ -1,5 +1,5 @@
-# intractmodelinf
-The goal of the `intractmodelinf` package is to provide tools for inference for models with intractable likelihoods using Approximate Bayesian Computation (ABC). It uses R with integrated C++ code (using Rcpp and RcppArmadillo) to help with computational speed.
+# ZombieSim
+The goal of the `ZombieSim` package is to provide tools for inference for models with intractable likelihoods using Approximate Bayesian Computation (ABC).  Specifically, modelling the outbreak of a viral zombie epidemic and using ABC to estimate model parameters from simulated data.  The package uses R with integrated C++ code (using Rcpp and RcppArmadillo) to help with computational speed.
 
 This also contains functions to simulate a zombie epidemic under the model described in ["When zombies attack!: Mathematical modelling
 of an outbreak of zombie infection"](https://loe.org/images/content/091023/Zombie%20Publication.pdf). We use the SZR model given in the paper with the natural birth and death rate set to zero. 
@@ -10,7 +10,7 @@ This package can be downloaded and used with `devtools` as below:
 ``` r
 # install.packages("devtools")
 library(devtools)
-devtools::install_github("RaspberryEmma/Intractable-Models-Sim-Study/ZombieSim")
+devtools::install_github("RaspberryEmma/ZombieSim/ZombieSim")
 library(ZombieSim)
 ```
 
@@ -21,8 +21,10 @@ Lets now run through an example of how to use various parameters from the packag
 N <-5000
 initial <- generateStartCond(N, initial.inf = 10)
 new.example <- generateSZRdata(initial, total.T = 50)
+
 # Let's plot our data!
 plot.SZR(new.example$results)
+
 # Let's get our samples for the posterior of the parameters
 simulated.mat <- new.example$results
 simulated.mat  <- as.matrix(simulated.mat[,2:4])
@@ -30,6 +32,7 @@ head(simulated.mat )
 priorMin <- c(0.0        , 0.0001, 0.0        , 0.00009, 0.0049) 
 priorMax <- c(0.000000001, 0.00095 , 0.000000001, 0.0001 , 0.005 )
 res <- abcRej(simulated.mat , 10000000, 1000, priorMin, priorMax)
+
 # Let's plot our simulated values alongside the true parameters!
 library(ggplot2)
 library(dplyr)
