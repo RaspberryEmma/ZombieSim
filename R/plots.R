@@ -8,6 +8,7 @@ require(ggplot2)
 #' @return A plot showing the changes in the S, Z and R populations over time
 #' @export
 plot_SZR <- function(data){
+ legend.colors <- c("Susceptible" = "cadetblue1", "Removed" = "steelblue2", "Zombies" = "yellow")
  p <- ggplot2::ggplot(data, ggplot2::aes(x = t)) +
    ggplot2::geom_line(ggplot2::aes(y  = S.t, color = "Susceptible")) +
    ggplot2::geom_line(ggplot2::aes(y  = Z.t, color = "Zombies")) +
