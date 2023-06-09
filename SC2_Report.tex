@@ -74,16 +74,6 @@
 \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
 \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\usepackage{longtable,booktabs,array}
-\usepackage{calc} % for calculating minipage widths
-% Correct order of tables after \paragraph or \subparagraph
-\usepackage{etoolbox}
-\makeatletter
-\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
-\makeatother
-% Allow footnotes in longtable head/foot
-\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
-\makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
@@ -137,66 +127,6 @@
 \hypertarget{simulations}{%
 \subsection{Simulations}\label{simulations}}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# {-}{-}{-}{-}{-} Working Examples {-}{-}{-}{-}{-}}
-
-\CommentTok{\# Replace source call with install.github() and library calls when package is finished!}
-\CommentTok{\# install.github("https://github.com/RaspberryEmma/Intractable{-}Models{-}Sim{-}Study")}
-\CommentTok{\# library(intractmodelinf)}
-
-\FunctionTok{source}\NormalTok{(}\StringTok{"intractmodelinf/R/generate\_data.R"}\NormalTok{)}
-\FunctionTok{suppressPackageStartupMessages}\NormalTok{(\{}
-  \FunctionTok{library}\NormalTok{(dplyr)}
-  \FunctionTok{library}\NormalTok{(ggplot2)}
-  \FunctionTok{library}\NormalTok{(knitr)}
-  \FunctionTok{library}\NormalTok{(tidyverse)}
-\NormalTok{\})}
-
-\NormalTok{bristol.uni.N }\OtherTok{\textless{}{-}} \DecValTok{29434}
-\NormalTok{bristol.N     }\OtherTok{\textless{}{-}} \DecValTok{467099}
-\NormalTok{UK.N          }\OtherTok{\textless{}{-}} \DecValTok{67081234}
-
-\NormalTok{bristol.uni.example }\OtherTok{\textless{}{-}} \FunctionTok{generate.SIR.data}\NormalTok{(}\AttributeTok{total.N     =}\NormalTok{ bristol.uni.N,}
-                                         \AttributeTok{initial.inf =} \DecValTok{10}\NormalTok{,}
-                                         \AttributeTok{total.T     =} \DecValTok{150}\NormalTok{)}
-
-\NormalTok{bristol.example }\OtherTok{\textless{}{-}} \FunctionTok{generate.SIR.data}\NormalTok{(}\AttributeTok{total.N     =}\NormalTok{ bristol.N,}
-                                     \AttributeTok{initial.inf =} \DecValTok{10}\NormalTok{,}
-                                     \AttributeTok{total.T     =} \DecValTok{150}\NormalTok{)}
-
-\NormalTok{UK.example }\OtherTok{\textless{}{-}} \FunctionTok{generate.SIR.data}\NormalTok{(}\AttributeTok{total.N     =}\NormalTok{ UK.N,}
-                                \AttributeTok{initial.inf =} \DecValTok{10}\NormalTok{,}
-                                \AttributeTok{total.T     =} \DecValTok{150}\NormalTok{)}
-
-\NormalTok{bristol.uni.example }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{head}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{()}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{longtable}[]{@{}rrrrrrr@{}}
-\toprule()
-t & S.t & I.t & R.t & N & b & k \\
-\midrule()
-\endhead
-1 & 29434 & 10 & 0 & 29434 & 0.6323166 & 0.3918715 \\
-2 & 29427 & 12 & 3 & 29434 & 0.6323166 & 0.3918715 \\
-3 & 29419 & 14 & 7 & 29434 & 0.6323166 & 0.3918715 \\
-4 & 29410 & 17 & 12 & 29434 & 0.6323166 & 0.3918715 \\
-5 & 29399 & 21 & 18 & 29434 & 0.6323166 & 0.3918715 \\
-6 & 29385 & 26 & 26 & 29434 & 0.6323166 & 0.3918715 \\
-\bottomrule()
-\end{longtable}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# {-}{-}{-}{-}{-} Save Data {-}{-}{-}{-}{-}}
-
-\FunctionTok{write.csv}\NormalTok{( bristol.uni.example, }\AttributeTok{file =} \StringTok{"data/bristol\_uni\_example.csv"}\NormalTok{, }\AttributeTok{row.names =} \ConstantTok{FALSE}\NormalTok{ )}
-\FunctionTok{write.csv}\NormalTok{( bristol.example,     }\AttributeTok{file =} \StringTok{"data/bristol\_example.csv"}\NormalTok{, }\AttributeTok{row.names =} \ConstantTok{FALSE}\NormalTok{ )}
-\FunctionTok{write.csv}\NormalTok{( UK.example,          }\AttributeTok{file =} \StringTok{"data/UK\_example.csv"}\NormalTok{, }\AttributeTok{row.names =} \ConstantTok{FALSE}\NormalTok{ )}
-\end{Highlighting}
-\end{Shaded}
-
 \hypertarget{parallelisation}{%
 \subsection{Parallelisation}\label{parallelisation}}
 
@@ -205,50 +135,31 @@ t & S.t & I.t & R.t & N & b & k \\
 
 We simulate the zombie epidemic using the \texttt{generate.SIR.data()}
 function, which is given by the code below. For ease, this function has
-also been included in our \texttt{intractmodelinf} package
+also been included in our \texttt{intractmodelinf} package.
+
+We use this to simulate an outbreak for 3 different populations of
+different sizes:
+
+\begin{itemize}
+\tightlist
+\item
+  Students (\textbf{REVISIT} and staff?) at the University of Bristol
+\item
+  Residents in the city of Bristol
+\item
+  Residents in the UK
+\end{itemize}
+
+The data on these simulated outbreaks is included in our package
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{generate.SIR.data }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(}\AttributeTok{total.N =} \ConstantTok{NULL}\NormalTok{, }\AttributeTok{initial.inf =} \ConstantTok{NULL}\NormalTok{, }\AttributeTok{total.T =} \ConstantTok{NULL}\NormalTok{) \{}
-  
-  \CommentTok{\# initial model conditions}
-\NormalTok{  cond }\OtherTok{\textless{}{-}} \FunctionTok{generate.start.cond}\NormalTok{(}\AttributeTok{total.N =}\NormalTok{ total.N, }\AttributeTok{initial.inf =}\NormalTok{ initial.inf)}
-  
-  \CommentTok{\# constant model parameters}
-\NormalTok{  N    }\OtherTok{\textless{}{-}}\NormalTok{ total.N}
-\NormalTok{  b    }\OtherTok{\textless{}{-}}\NormalTok{ cond[}\DecValTok{5}\NormalTok{]}
-\NormalTok{  k    }\OtherTok{\textless{}{-}}\NormalTok{ cond[}\DecValTok{6}\NormalTok{]}
-  
-  \CommentTok{\# results array to hold values of each function at times 1 to total.T}
-\NormalTok{  results }\OtherTok{\textless{}{-}} \FunctionTok{array}\NormalTok{(}\AttributeTok{data =} \ConstantTok{NA}\NormalTok{, }\AttributeTok{dim =} \FunctionTok{c}\NormalTok{(total.T, }\FunctionTok{length}\NormalTok{(cond)}\SpecialCharTok{+}\DecValTok{1}\NormalTok{) )}
-\NormalTok{  results[}\DecValTok{1}\NormalTok{, ] }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, cond)}
-  
-  \CommentTok{\# vector to hold current sim values}
-\NormalTok{  values.t }\OtherTok{\textless{}{-}} \ConstantTok{NULL}
-  
-  \CommentTok{\# run through SIR simulation for times 2 to total.T}
-  \CommentTok{\# results vector indices 1=S, 2=I, 3=R}
-  \ControlFlowTok{for}\NormalTok{ (t }\ControlFlowTok{in} \DecValTok{2}\SpecialCharTok{:}\NormalTok{total.T) \{}
-\NormalTok{    S.t }\OtherTok{\textless{}{-}} \FunctionTok{as.integer}\NormalTok{( results[t}\DecValTok{{-}1}\NormalTok{, }\DecValTok{2}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ N}\SpecialCharTok{*}\FunctionTok{change.s}\NormalTok{(b,    results[t}\DecValTok{{-}1}\NormalTok{, }\DecValTok{2}\NormalTok{]}\SpecialCharTok{/}\NormalTok{N, results[t}\DecValTok{{-}1}\NormalTok{, }\DecValTok{3}\NormalTok{]}\SpecialCharTok{/}\NormalTok{N) )}
-    
-\NormalTok{    I.t }\OtherTok{\textless{}{-}} \FunctionTok{as.integer}\NormalTok{( results[t}\DecValTok{{-}1}\NormalTok{, }\DecValTok{3}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ N}\SpecialCharTok{*}\FunctionTok{change.i}\NormalTok{(b, k, results[t}\DecValTok{{-}1}\NormalTok{, }\DecValTok{2}\NormalTok{]}\SpecialCharTok{/}\NormalTok{N, results[t}\DecValTok{{-}1}\NormalTok{, }\DecValTok{3}\NormalTok{]}\SpecialCharTok{/}\NormalTok{N) )}
-    
-\NormalTok{    R.t }\OtherTok{\textless{}{-}} \FunctionTok{as.integer}\NormalTok{( results[t}\DecValTok{{-}1}\NormalTok{, }\DecValTok{4}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ N}\SpecialCharTok{*}\FunctionTok{change.r}\NormalTok{(k,    results[t}\DecValTok{{-}1}\NormalTok{, }\DecValTok{3}\NormalTok{]}\SpecialCharTok{/}\NormalTok{N) )}
-    
-\NormalTok{    values.t     }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(t, S.t, I.t, R.t, N, b, k)}
-\NormalTok{    results[t, ] }\OtherTok{\textless{}{-}}\NormalTok{ values.t}
-\NormalTok{  \}}
-  
-  \CommentTok{\# convert to data.frame to explicitly record column meaning}
-\NormalTok{  results           }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(results)}
-  \FunctionTok{colnames}\NormalTok{(results) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"t"}\NormalTok{, }\StringTok{"S.t"}\NormalTok{, }\StringTok{"I.t"}\NormalTok{, }\StringTok{"R.t"}\NormalTok{, }\StringTok{"N"}\NormalTok{, }\StringTok{"b"}\NormalTok{, }\StringTok{"k"}\NormalTok{)}
-  
-  \FunctionTok{return}\NormalTok{ ( results )}
-\NormalTok{\}}
+\NormalTok{N     }\OtherTok{\textless{}{-}}\DecValTok{5000}
+\NormalTok{initial }\OtherTok{\textless{}{-}} \FunctionTok{generateStartCond}\NormalTok{(N, }\AttributeTok{initial.inf =} \DecValTok{10}\NormalTok{)}
+
+\NormalTok{new.example }\OtherTok{\textless{}{-}} \FunctionTok{generateSZRdata}\NormalTok{(initial ,}\AttributeTok{total.T     =} \DecValTok{50}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
-
-We use this to simulate an outbreak for 3 diff
 
 \hypertarget{implementing-abc}{%
 \section{Implementing ABC}\label{implementing-abc}}
@@ -258,15 +169,113 @@ We use this to simulate an outbreak for 3 diff
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{bristol.uni.example }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"data/bristol\_uni\_example.csv"}\NormalTok{, }\AttributeTok{header =} \ConstantTok{TRUE}\NormalTok{)}
-\NormalTok{bristol.example     }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"data/bristol\_example.csv"}\NormalTok{, }\AttributeTok{header =} \ConstantTok{TRUE}\NormalTok{)}
-\NormalTok{UK.example          }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"data/UK\_example.csv"}\NormalTok{, }\AttributeTok{header =} \ConstantTok{TRUE}\NormalTok{)}
+\CommentTok{\#bristol.uni.example \textless{}{-} read.csv("data/bristol\_uni\_example.csv", header = TRUE)}
+\CommentTok{\#bristol.example     \textless{}{-} read.csv("data/bristol\_example.csv", header = TRUE)}
+\CommentTok{\#UK.example          \textless{}{-} read.csv("data/UK\_example.csv", header = TRUE)}
 
-\NormalTok{legend.colors }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Susceptible"} \OtherTok{=} \StringTok{"red"}\NormalTok{, }\StringTok{"Infected"} \OtherTok{=} \StringTok{"blue"}\NormalTok{, }\StringTok{"Recovered"} \OtherTok{=} \StringTok{"green"}\NormalTok{)}
+\NormalTok{legend.colors }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Susceptible"} \OtherTok{=} \StringTok{"\#56B4E9"}\NormalTok{, }\StringTok{"Zombies"} \OtherTok{=} \StringTok{"\#E69F00"}\NormalTok{, }\StringTok{"Removed"} \OtherTok{=} \StringTok{"\#0072B2"}\NormalTok{)}
+\FunctionTok{source}\NormalTok{(}\AttributeTok{file =} \StringTok{"intractmodelinf/R/plots.R"}\NormalTok{)}
 
-\FunctionTok{plot.SIR}\NormalTok{(bristol.uni.example)}
+\FunctionTok{plot.SZR}\NormalTok{(new.example}\SpecialCharTok{$}\NormalTok{results) }\SpecialCharTok{+} \FunctionTok{theme\_linedraw}\NormalTok{() }\SpecialCharTok{+}\FunctionTok{theme\_bw}\NormalTok{()}
 \end{Highlighting}
 \end{Shaded}
 
+\begin{center}\includegraphics[width=0.6\linewidth]{SC2_Report_files/figure-latex/eval-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{simulated.mat }\OtherTok{\textless{}{-}}\NormalTok{ new.example}\SpecialCharTok{$}\NormalTok{results}
+\NormalTok{simulated.mat  }\OtherTok{\textless{}{-}} \FunctionTok{as.matrix}\NormalTok{(simulated.mat[,}\DecValTok{2}\SpecialCharTok{:}\DecValTok{4}\NormalTok{])}
+\FunctionTok{head}\NormalTok{(simulated.mat )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       S.t Z.t R.t
+## [1,] 4990  10   0
+## [2,] 4966  24  10
+## [3,] 4906  60  34
+## [4,] 4796 110  94
+## [5,] 4592 204 204
+## [6,] 4234 358 408
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{priorMin }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\FloatTok{0.000004}\NormalTok{,}\FloatTok{0.000004}\NormalTok{,  }\FloatTok{0.000004}\NormalTok{) }
+\NormalTok{priorMax }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\FloatTok{0.0015}\NormalTok{ ,}\FloatTok{0.001}\NormalTok{, }\FloatTok{0.001}\NormalTok{)}
+\NormalTok{res }\OtherTok{\textless{}{-}} \FunctionTok{abcRej}\NormalTok{(simulated.mat , }\DecValTok{10000}\NormalTok{, }\DecValTok{400}\NormalTok{, priorMin, priorMax)}
+\FunctionTok{head}\NormalTok{(res)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##              [,1]         [,2]         [,3]
+## [1,] 0.0004250723 0.0008617067 0.0006589291
+## [2,] 0.0004237616 0.0009770686 0.0007613837
+## [3,] 0.0003875616 0.0004843493 0.0006826764
+## [4,] 0.0003708313 0.0006252518 0.0007569413
+## [5,] 0.0004010205 0.0007269969 0.0005887166
+## [6,] 0.0004492728 0.0009563075 0.0002842800
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(latex2exp)}
+\FunctionTok{require}\NormalTok{(ggplot2)}
+\FunctionTok{require}\NormalTok{(gridExtra)}
+\NormalTok{plot.posterior.samples }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(sample, mean)\{}
+\NormalTok{  beta\_plot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ sample, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ beta)) }\SpecialCharTok{+} 
+    \FunctionTok{geom\_density}\NormalTok{(}\AttributeTok{colour =} \StringTok{"steelblue2"}\NormalTok{, }\AttributeTok{fill =} \StringTok{"steelblue2"}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{geom\_vline}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{xintercept =}\NormalTok{ mean[}\DecValTok{1}\NormalTok{]))}\SpecialCharTok{+}
+    \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \FunctionTok{TeX}\NormalTok{(}\StringTok{"$}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{hat\{}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{beta\}$"}\NormalTok{), }\AttributeTok{y =} \StringTok{"Accepted Samples"}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{theme\_classic}\NormalTok{()}
+\NormalTok{  kappa\_plot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ sample, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ kappa)) }\SpecialCharTok{+} 
+    \FunctionTok{geom\_density}\NormalTok{(}\AttributeTok{fill =} \StringTok{"steelblue2"}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{,}\AttributeTok{colour =} \StringTok{"steelblue2"}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{geom\_vline}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{xintercept =}\NormalTok{ mean[}\DecValTok{2}\NormalTok{])) }\SpecialCharTok{+}
+    \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \FunctionTok{TeX}\NormalTok{(}\StringTok{"$}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{hat\{}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{kappa\}$"}\NormalTok{), }\AttributeTok{y =} \StringTok{"Accepted Samples"}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{theme\_classic}\NormalTok{()}
+\NormalTok{  rho\_plot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ sample, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ rho)) }\SpecialCharTok{+} 
+    \FunctionTok{geom\_density}\NormalTok{(}\AttributeTok{colour =} \StringTok{"steelblue2"}\NormalTok{, }\AttributeTok{fill =} \StringTok{"steelblue2"}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{geom\_vline}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{xintercept =}\NormalTok{ mean[}\DecValTok{3}\NormalTok{]))}\SpecialCharTok{+}
+    \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \FunctionTok{TeX}\NormalTok{(}\StringTok{"$}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{hat\{}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{rho\}$"}\NormalTok{), }\AttributeTok{y =} \StringTok{"Accepted Samples"}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{theme\_classic}\NormalTok{()}
+  \FunctionTok{return}\NormalTok{(}\FunctionTok{list}\NormalTok{(beta\_plot, kappa\_plot, rho\_plot))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\FunctionTok{library}\NormalTok{(ggthemes)}
+\NormalTok{means }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(new.example}\SpecialCharTok{$}\NormalTok{beta, new.example}\SpecialCharTok{$}\NormalTok{kappa, new.example}\SpecialCharTok{$}\NormalTok{rho)}
+\NormalTok{samples }\OtherTok{\textless{}{-}}\NormalTok{ res }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{as\_tibble}\NormalTok{()}
+\FunctionTok{colnames}\NormalTok{(samples) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"beta"}\NormalTok{, }\StringTok{"kappa"}\NormalTok{, }\StringTok{"rho"}\NormalTok{)  }
+
+\NormalTok{plots }\OtherTok{\textless{}{-}} \FunctionTok{plot.posterior.samples}\NormalTok{(samples, means)}
+\NormalTok{plots[[}\DecValTok{1}\NormalTok{]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.6\linewidth]{SC2_Report_files/figure-latex/unnamed-chunk-4-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{plots[[}\DecValTok{2}\NormalTok{]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.6\linewidth]{SC2_Report_files/figure-latex/unnamed-chunk-4-2} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{plots[[}\DecValTok{3}\NormalTok{]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.6\linewidth]{SC2_Report_files/figure-latex/unnamed-chunk-4-3} \end{center}
 
 \end{document}

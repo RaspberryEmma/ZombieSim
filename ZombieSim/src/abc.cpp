@@ -72,20 +72,13 @@ arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints,
 
     for (int t = 1; t < numTimePoints; ++t) {
       // Retrieve parameter values for the current sample
-      double birthRate = parameters(i, 0);
-      double encounterRate = parameters(i, 1);
-      double deathRate = parameters(i, 2);
-      double resurrectionRate = parameters(i, 3);
-      double defeatRate = parameters(i, 4);
+      double encounterRate = parameters(i, 0);
+      double defeatRate = parameters(i, 1);
+      double resurrectionRate = parameters(i, 2);
+      
       // Check if the parameter values are within the allowed range
-      if (birthRate < 0 || birthRate > 1) {
-        Rcpp::stop("The birth rate must be between 0 and 1.");
-      }
       if (encounterRate < 0 || encounterRate > 1) {
         Rcpp::stop("The encounter rate must be between 0 and 1.");
-      }
-      if (deathRate < 0 || deathRate > 1) {
-        Rcpp::stop("The death rate must be between 0 and 1.");
       }
       if (resurrectionRate < 0 || resurrectionRate > 1) {
         Rcpp::stop("The resurrection rate must be between 0 and 1.");
@@ -322,7 +315,7 @@ arma::mat abcRej(const arma::mat& observedData, const int numParticles, const do
   if (observedData.n_cols != 3) {
     Rcpp::stop("The observed data must have three columns.");
   }
-  int numParams = 5;
+  int numParams = priorMin.size();
 
   // Initialize containers for parameter samples and posterior summaries
   arma::mat parameterSamples(numParticles, numParams);
