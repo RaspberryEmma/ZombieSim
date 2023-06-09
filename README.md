@@ -1,5 +1,5 @@
-# intractmodelinf
-The goal of the `intractmodelinf` package is to provide tools for inference for models with intractable likelihoods using Approximate Bayesian Computation (ABC). It uses R with integrated C++ code (using Rcpp and RcppArmadillo) to help with computational speed.
+# ZombieSim
+The goal of the `ZombieSim` package is to provide tools for inference for models with intractable likelihoods using Approximate Bayesian Computation (ABC). It uses R with integrated C++ code (using Rcpp and RcppArmadillo) to help with computational speed.
 
 This also contains functions to simulate a zombie epidemic under the model described in ["When zombies attack!: Mathematical modelling
 of an outbreak of zombie infection"](https://loe.org/images/content/091023/Zombie%20Publication.pdf). We use the SZR model given in the paper with the natural birth and death rate set to zero. 
@@ -10,7 +10,7 @@ This package can be downloaded and used with `devtools` as below:
 ``` r
 # install.packages("devtools")
 library(devtools)
-devtools::install_github("RaspberryEmma/Intractable-Models-Sim-Study/ZombieSim")
+devtools::install_github("RaspberryEmma/ZombieSim")
 library(ZombieSim)
 ```
 
