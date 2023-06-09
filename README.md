@@ -27,14 +27,14 @@ plot.SZR(new.example$results)
 simulated.mat <- new.example$results
 simulated.mat  <- as.matrix(simulated.mat[,2:4])
 head(simulated.mat )
-priorMin <- c(0.0        , 0.0001, 0.0        , 0.00009, 0.0049) 
-priorMax <- c(0.000000001, 0.00095 , 0.000000001, 0.0001 , 0.005 )
+priorMin <- c(0.000004,0.000004,  0.000004) 
+priorMax <- c(0.0015 ,0.001, 0.001)
 res <- abcRej(simulated.mat , 10000000, 1000, priorMin, priorMax)
 # Let's plot our simulated values alongside the true parameters!
 library(ggplot2)
 library(dplyr)
 means <- c(new.example$beta, new.example$kappa, new.example$rho)
-samples <- res[,2:4] %>%
+samples <- res %>%
   as_tibble()
 colnames(samples) <- c("beta", "kappa", "rho")  
 plots <- plot.posterior.samples(samples, means)
