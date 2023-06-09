@@ -57,7 +57,7 @@ arma::mat generateParameterSamples(int numParticles, int numParams, arma::vec pr
 //' @return  A 3D array of simulated data with dimensions (numParticles, numTimePoints, 3). The third dimension represents the populations: 1 - Susceptible, 2 - Zombie, 3 - Removed
 //' @export
 // [[Rcpp::export]]
-arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints, const arma::vec& starting) {
+arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints, const arma::rowvec& starting) {
   int numParticles = parameters.n_rows; // Number of parameter samples
   arma::cube simulatedData(numTimePoints, 3, numParticles, arma::fill::zeros);
   for (int i = 0; i < numParticles; ++i) {
@@ -72,20 +72,13 @@ arma::cube generateSimulatedData(const arma::mat& parameters, int numTimePoints,
 
     for (int t = 1; t < numTimePoints; ++t) {
       // Retrieve parameter values for the current sample
-      double birthRate = parameters(i, 0);
-      double encounterRate = parameters(i, 1);
-      double deathRate = parameters(i, 2);
-      double resurrectionRate = parameters(i, 3);
-      double defeatRate = parameters(i, 4);
+      double encounterRate = parameters(i, 0);
+      double defeatRate = parameters(i, 1);
+      double resurrectionRate = parameters(i, 2);
+      
       // Check if the parameter values are within the allowed range
-      if (birthRate < 0 || birthRate > 1) {
-        Rcpp::stop("The birth rate must be between 0 and 1.");
-      }
       if (encounterRate < 0 || encounterRate > 1) {
         Rcpp::stop("The encounter rate must be between 0 and 1.");
-      }
-      if (deathRate < 0 || deathRate > 1) {
-        Rcpp::stop("The death rate must be between 0 and 1.");
       }
       if (resurrectionRate < 0 || resurrectionRate > 1) {
         Rcpp::stop("The resurrection rate must be between 0 and 1.");
@@ -322,7 +315,7 @@ arma::mat abcRej(const arma::mat& observedData, const int numParticles, const do
   if (observedData.n_cols != 3) {
     Rcpp::stop("The observed data must have three columns.");
   }
-  int numParams = 5;
+  int numParams = priorMin.size();
 
   // Initialize containers for parameter samples and posterior summaries
   arma::mat parameterSamples(numParticles, numParams);
@@ -333,12 +326,13 @@ arma::mat abcRej(const arma::mat& observedData, const int numParticles, const do
 
   // Generate simulated data based on parameter samples
   int numTimePoints = observedData.n_rows;
-  arma::vec starting = observedData.row(0);
+  arma::rowvec starting = observedData.row(1);
+  
   arma::cube simulatedData = generateSimulatedData(parameterSamples, numTimePoints, starting);
-
+  
   // Compute distance between observed and simulated data
   arma::mat distances = calculateDistance(observedData, simulatedData);
-
+  
   // Compare distance to tolerance threshold and accept/reject parameter samples and update parameter samples based on acceptance/rejection step, assign higher weights to accepted samples
   arma::mat accepted = acceptReject(parameterSamples, distances, epsilon);
 
