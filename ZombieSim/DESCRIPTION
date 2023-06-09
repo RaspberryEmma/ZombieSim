@@ -7,7 +7,7 @@ Author: Henry Bourne, Emma Tarmey and Rachel Wood
 Maintainer: <jd18380@bristol.ac.uk>
 Description: Provides functions for simulating zombie epidemic data using the SZR model (a model adapted from the well-known SIR model). It also provides functions for performing inference of the model parameters using methods that can work with intractable likelihoods. Currently it provides functions for performing approximate Bayesian computation (ABC). The package also provides functions for plotting the results of the simulations and inference. 
 License: GPL (>= 2)
-Imports: Rcpp (>= 1.0.10), dplyr (>= 1.0.6), ggplot2 (>= 3.3.3), tidyverse (>= 1.3.1), stats
+Imports: Rcpp (>= 1.0.10), ggplot2 (>= 3.3.3), latex2exp, stats
 LinkingTo: Rcpp, RcppArmadillo
 Suggests: 
     testthat (>= 3.0.0)
