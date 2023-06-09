@@ -24,7 +24,7 @@ initial <- generateStartCond(N, initial.inf = 10)
 new.example <- generateSZRdata(initial, total.T = 50)
 
 # Let's plot our data!
-plot.SZR(new.example$results)
+plot_SZR(new.example$results)
 
 # Let's get our samples for the posterior of the parameters
 simulated.mat <- new.example$results
